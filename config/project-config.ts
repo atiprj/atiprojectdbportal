@@ -4,10 +4,23 @@
 export const projectConfig = {
   // Informazioni generali del progetto
   general: {
-    name: "Nome Progetto",
-    description: "Descrizione dettagliata del progetto",
-    client: "Nome Cliente",
-    location: "Località del Progetto",
+    name: "2560.24 PPP FTE NEW Turin Hospital (TO)",
+    description: `Il progetto riguarda la redazione del Progetto di Fattibilità Tecnica ed Economica (PFTE) per la realizzazione del nuovo Ospedale dell’ASL Città di Torino, localizzato nell’area urbana di Torino (NUTS ITC11). L’obiettivo è concepire una struttura sanitaria moderna, flessibile e sostenibile, in grado di ospitare 600 posti letto complessivi (di cui 50 in terapia intensiva), suddivisi in reparti per acuti, day hospital e servizi ambulatoriali polifunzionali.
+
+Il PFTE include:
+- Analisi preliminare dello stato di fatto e delle esigenze funzionali: raccolta dati, rilievi topografici, valutazione delle criticità logistiche e ambientali.
+- Definizione del programma funzionale: organizzazione degli spazi (blocco operatorio, degenze, servizi diagnostici, laboratori, aree amministrative e logistiche) secondo flussi separati “pulito/sporco” e ottimizzazione dei percorsi interni.
+- Proposta di layout architettonico e distribuzione planimetrica: soluzioni a blocchi modulari per facilitare futuri ampliamenti e manutenzioni, integrazione con il contesto urbano e spazi verdi di pertinenza.
+- Inquadramento impiantistico: schemi preliminari per impianti elettrici, HVAC, gas medicali, sistemi ICT e building automation, con particolare attenzione all’efficienza energetica e alla certificazione LEED/Itaca.
+- Verifica di fattibilità strutturale e geotecnica: indagini geologiche e sismiche, studio delle soluzioni strutturali (ossatura in c.a. e acciaio), analisi di fattibilità antisimica.
+- Coordinamento della sicurezza in fase di progettazione (CSP): identificazione dei rischi da interferenza, definizione delle misure di prevenzione, piano di sicurezza preliminare.
+- Analisi di sostenibilità economica: stima dei costi di costruzione e di gestione, valutazione del life-cycle cost, comparazione di scenari alternativi.
+- BIM management: definizione dei livelli di dettaglio (LOD), piano di gestione informativa, guidelines per la modellazione e i formati di scambio.
+
+`,
+    client: "ASL Città di Torino",
+    location: "Torino (IT)",
+
     startDate: "2023-01-01",
     endDate: "2024-12-31",
     status: "In corso", // In corso, Completato, In fase di pianificazione, ecc.
