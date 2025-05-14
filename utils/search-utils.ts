@@ -66,6 +66,7 @@ function searchDocuments(query: string): any[] {
     .map((document) => ({
       ...document,
       type: "document",
+      fileType: document.type, // Aggiungi il tipo di file
       url: `/documents?id=${document.id}`,
       originalUrl: document.url, // Aggiungiamo l'URL originale del documento
     }))

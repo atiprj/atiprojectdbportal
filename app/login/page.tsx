@@ -71,9 +71,6 @@ export default function LoginPage() {
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" type="password" required />
-              <p className="text-xs text-muted-foreground mt-1">
-                Per questa demo, usa nome utente: "admin" e password: "password"
-              </p>
             </div>
           </CardContent>
           <CardFooter className="px-6 pb-6">

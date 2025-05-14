@@ -2,7 +2,17 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { File, CuboidIcon as Cube, BarChart3, BookOpen, FileText } from "lucide-react"
+import {
+  File,
+  CuboidIcon as Cube,
+  BarChart3,
+  BookOpen,
+  FileText,
+  FileSpreadsheet,
+  FileCode,
+  FileArchive,
+  FileImage,
+} from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { searchResources } from "@/utils/search-utils"
 
@@ -67,7 +77,38 @@ export function SearchResults({ query, className }: SearchResultsProps) {
     {} as Record<string, any[]>,
   )
 
-  const getIcon = (type: string) => {
+  const getIcon = (type: string, fileType?: string) => {
+    // Per i documenti, usa icone specifiche in base al tipo di file
+    if (type === "document" && fileType) {
+      switch (fileType.toLowerCase()) {
+        case "pdf":
+          return <FileText className="h-5 w-5 text-red-500" />
+        case "xlsx":
+        case "xls":
+        case "csv":
+          return <FileSpreadsheet className="h-5 w-5 text-green-500" />
+        case "docx":
+        case "doc":
+          return <FileText className="h-5 w-5 text-blue-500" />
+        case "ppt":
+        case "pptx":
+          return <FileText className="h-5 w-5 text-orange-500" />
+        case "zip":
+        case "rar":
+          return <FileArchive className="h-5 w-5 text-purple-500" />
+        case "jpg":
+        case "png":
+        case "gif":
+          return <FileImage className="h-5 w-5 text-pink-500" />
+        case "js":
+        case "ts":
+        case "py":
+        case "json":
+          return <FileCode className="h-5 w-5 text-yellow-500" />
+      }
+    }
+
+    // Per gli altri tipi di risorse, usa le icone predefinite
     switch (type) {
       case "model":
         return <Cube className="h-5 w-5 text-blue-500" />
@@ -117,7 +158,9 @@ export function SearchResults({ query, className }: SearchResultsProps) {
                 <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
                   <CardHeader className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="mt-1">{getIcon(result.type)}</div>
+                      <div className="mt-1">
+                        {getIcon(result.type, result.type === "document" ? result.fileType || result.type : undefined)}
+                      </div>
                       <div>
                         <CardTitle className="text-base">{result.name}</CardTitle>
                         <CardDescription className="line-clamp-2">{result.description}</CardDescription>
