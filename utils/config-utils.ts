@@ -32,6 +32,16 @@ export function getProjectName(): string {
   return projectConfig.general?.name || "Progetto BIM"
 }
 
+// Funzione per ottenere il font principale con fallback
+export function getFont(): string {
+  return projectConfig.branding?.font || "IBM Plex Mono"
+}
+
+// Funzione per ottenere i pesi del font
+export function getFontWeights(): string[] {
+  return projectConfig.branding?.fontWeights || ["400", "500", "600", "700"]
+}
+
 // Funzione per verificare se una funzionalità è abilitata
 export function isFeatureEnabled(featureName: string): boolean {
   return !!getConfigValue(`features.${featureName}`, false)

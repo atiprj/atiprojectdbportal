@@ -5,7 +5,7 @@
 export const projectConfig = {
   // Informazioni generali del progetto
   general: {
-    name: "Nome Progetto",
+    name: "2560.24 PPP FTE NEW Turin Hospital (TO)",
     description:
       "Il progetto riguarda la redazione del Progetto di Fattibilità Tecnica ed Economica (PFTE) per la realizzazione del nuovo Ospedale dell’ASL Città di Torino, localizzato nell’area urbana di Torino (NUTS ITC11). L’obiettivo è concepire una struttura sanitaria moderna, flessibile e sostenibile, in grado di ospitare 600 posti letto complessivi (di cui 50 in terapia intensiva), suddivisi in reparti per acuti, day hospital e servizi ambulatoriali polifunzionali.",
     client: "ASL Città di Torino",
@@ -31,6 +31,8 @@ export const projectConfig = {
     secondaryColor: "#0284c7", // Colore secondario (sky-600)
     accentColor: "#f59e0b", // Colore di accento (amber-500)
     darkMode: true, // Abilita/disabilita la modalità scura
+    font: "IBM Plex Mono", // Font principale del sito
+    fontWeights: ["400", "500", "600", "700"], // Pesi del font da caricare
   },
 
   // Navigazione personalizzata - Aggiungere o rimuovere voci di menu
@@ -233,16 +235,16 @@ export const projectConfig = {
 
   // Contatti e informazioni aziendali
   contact: {
-    company: "Studio Tecnico Associato",
-    address: "Via Roma 123, 00100 Roma, Italia",
-    email: "info@studiotecnico.it",
-    phone: "+39 06 1234567",
-    website: "https://www.studiotecnico.it",
+    company: "ATI Project s.r.l.",
+    address: "Via G.B. Picotti, 12/14",
+    email: "info@atiproject.com",
+    phone: "+39 050578460",
+    website: "https://atiproject.com/",
     socialMedia: {
-      linkedin: "https://www.linkedin.com/company/studiotecnico",
-      twitter: "https://twitter.com/studiotecnico",
-      facebook: "https://www.facebook.com/studiotecnico",
-      instagram: "https://www.instagram.com/studiotecnico",
+      linkedin: "https://www.linkedin.com/company/atiproject/posts/?feedView=all",
+      twitter: "https://atiproject.com/contatti/#",
+      facebook: "https://www.facebook.com/atiproject/?locale=it_IT",
+      instagram: "https://www.instagram.com/atiproject/?hl=it",
     },
   },
 
