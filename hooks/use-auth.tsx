@@ -4,18 +4,19 @@ import type React from "react"
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { projectConfig } from "@/config/project-config"
 
 interface User {
   id: string
   name: string
-  email: string
+  username: string
   role: string
 }
 
 interface AuthContextType {
   user: User | null
   isLoading: boolean
-  login: (email: string, password: string) => Promise<boolean>
+  login: (username: string, password: string) => Promise<boolean>
   logout: () => void
 }
 
@@ -36,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   // Funzione di login
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (username: string, password: string): Promise<boolean> => {
     setIsLoading(true)
 
     try {
@@ -44,12 +45,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       // In un'applicazione reale, qui si connetterebbe a un backend
-      // Per ora, accettiamo qualsiasi email con password "password"
-      if (password === "password") {
+      // Verifica le credenziali demo dal file di configurazione
+      const demoUsername = projectConfig.auth?.demoCredentials?.username || "admin"
+      const demoPassword = projectConfig.auth?.demoCredentials?.password || "password"
+
+      if (username === demoUsername && password === demoPassword) {
         const user = {
           id: "1",
-          name: email.split("@")[0],
-          email,
+          name: username,
+          username,
           role: "user",
         }
 

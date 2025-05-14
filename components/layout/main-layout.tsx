@@ -75,7 +75,7 @@ export function MainLayout({ children, className }: MainLayoutProps) {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      <p className="text-xs leading-none text-muted-foreground">Utente: {user.username}</p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />

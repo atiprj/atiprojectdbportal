@@ -24,11 +24,11 @@ export default function LoginPage() {
     setError("")
 
     const formData = new FormData(event.currentTarget)
-    const email = formData.get("email") as string
+    const username = formData.get("username") as string
     const password = formData.get("password") as string
 
     try {
-      const success = await login(email, password)
+      const success = await login(username, password)
 
       if (success) {
         router.push("/")
@@ -65,14 +65,14 @@ export default function LoginPage() {
           <CardContent className="space-y-5 px-6">
             {error && <div className="p-3 text-sm bg-destructive/15 text-destructive rounded-md">{error}</div>}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="nome@esempio.it" required />
+              <Label htmlFor="username">Nome utente</Label>
+              <Input id="username" name="username" placeholder="admin" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" type="password" required />
               <p className="text-xs text-muted-foreground mt-1">
-                Per questa demo, usa qualsiasi email con password: "password"
+                Per questa demo, usa nome utente: "admin" e password: "password"
               </p>
             </div>
           </CardContent>
