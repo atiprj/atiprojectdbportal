@@ -120,10 +120,10 @@ export const projectConfig = {
     dashboards: [
       {
         id: "dashboard-1",
-        name: "Analisi Costi",
+        name: "HLT Funzionale",
         description:
           "Dashboard interattiva che mostra l'analisi dettagliata dei costi di costruzione, suddivisi per categorie, fasi e materiali. Include grafici e tabelle per una facile comprensione e analisi dei dati finanziari del progetto.",
-        url: "https://app.powerbi.com/view?r=example1",
+        url: "https://app.powerbi.com/view?r=eyJrIjoiNjI4OTBlY2YtOTAzZi00ZWFhLTk5YWYtY2JlOTgxZjgyYmI1IiwidCI6IjZlY2FkODZiLWUwYjktNDFjNi1iMjcyLTU1MmZlMDJkMmUxMSIsImMiOjl9",
         type: "powerbi", // powerbi, tableau, altro
         thumbnail: "/images/thumbnails/dashboard-costi.jpg",
         category: "Costi",
@@ -151,10 +151,10 @@ export const projectConfig = {
     documents: [
       {
         id: "doc-1",
-        name: "Capitolato Tecnico",
+        name: "PGI",
         description:
-          "Specifiche tecniche dettagliate del progetto che includono requisiti, materiali, standard di qualità e metodi di costruzione. Questo documento è essenziale per appaltatori e fornitori.",
-        url: "https://docs.example.com/doc1",
+          "Piano di Gestione dell’Informazione (Information Management Plan, secondo UNI 11337-5 e ISO 19650)",
+        url: "https://acc.autodesk.com/docs/files/projects/e3063097-a00a-48ee-9573-ffad106463ae?folderUrn=urn%3Aadsk.wipprod%3Afs.folder%3Aco.knFad_oGSVK6vC66Hkvepw&entityId=urn%3Aadsk.wipprod%3Adm.lineage%3AuNwZZqCpRByi3XZrs_kHhA&viewModel=detail&moduleId=folders&viewableGuid=493c760d-9e61-45e6-82d5-79f99174c57e",
         type: "pdf",
         icon: "file-text", // Nome dell'icona Lucide (opzionale)
         category: "Documentazione Tecnica",
@@ -165,10 +165,10 @@ export const projectConfig = {
       },
       {
         id: "doc-2",
-        name: "Cronoprogramma",
+        name: "2560.24 - MSS_ModelSharedSettings",
         description:
           "Pianificazione temporale dettagliata dei lavori con date di inizio e fine per ogni fase del progetto, dipendenze tra attività e allocazione delle risorse.",
-        url: "https://docs.example.com/doc2",
+        url: "https://docs.google.com/spreadsheets/d/1ondUE54mD1l9iP1x9OJlttkacPoL9DIsWbn0cc-HFxE/edit?gid=0#gid=0",
         type: "xlsx",
         icon: "file-spreadsheet", // Nome dell'icona Lucide (opzionale)
         category: "Pianificazione",
@@ -179,10 +179,10 @@ export const projectConfig = {
       },
       {
         id: "doc-3",
-        name: "Relazione Tecnica",
+        name: "Nomenclature",
         description:
           "Relazione tecnica completa del progetto che include analisi, calcoli, metodologie e risultati. Questo documento fornisce una spiegazione dettagliata degli aspetti tecnici del progetto.",
-        url: "https://docs.example.com/doc3",
+        url: "https://acc.autodesk.com/docs/files/projects/e3063097-a00a-48ee-9573-ffad106463ae?folderUrn=urn%3Aadsk.wipprod%3Afs.folder%3Aco.knFad_oGSVK6vC66Hkvepw&entityId=urn%3Aadsk.wipprod%3Adm.lineage%3APF35vi8ERrSZn0hJQK7eog&viewModel=detail&moduleId=folders",
         type: "docx",
         icon: "file-text", // Nome dell'icona Lucide (opzionale)
         category: "Documentazione Tecnica",
