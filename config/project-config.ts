@@ -10,8 +10,8 @@ export const projectConfig = {
       "Il progetto riguarda la redazione del Progetto di Fattibilità Tecnica ed Economica (PFTE) per la realizzazione del nuovo Ospedale dell’ASL Città di Torino, localizzato nell’area urbana di Torino (NUTS ITC11). L’obiettivo è concepire una struttura sanitaria moderna, flessibile e sostenibile.",
     client: "ASL Città di Torino",
     location: "Torino (IT)",
-    startDate: "2023-01-01",
-    endDate: "2024-12-31",
+    startDate: "2024-09-02",
+    endDate: "2025-11-21",
     status: "In corso", // In corso, Completato, In fase di pianificazione, ecc.
 
     // Immagine o video principale del progetto (mostrato nella homepage)
@@ -98,8 +98,8 @@ export const projectConfig = {
         thumbnail: "/images/thumbnails/modello-architettonico.jpg", // Percorso relativo alla cartella public
         category: "Architettura",
         tags: ["architettura", "3D", "BIM"],
-        createdAt: "2023-10-15",
-        updatedAt: "2023-11-20",
+        // createdAt: "2023-10-15",
+        // updatedAt: "2023-11-20",
       },
       {
         id: "model-2",
@@ -111,8 +111,8 @@ export const projectConfig = {
         thumbnail: "/images/thumbnails/modello-strutturale.jpg",
         category: "Strutture",
         tags: ["strutture", "3D", "BIM"],
-        createdAt: "2023-10-20",
-        updatedAt: "2023-11-25",
+        // createdAt: "2023-10-20",
+        // updatedAt: "2023-11-25",
       },
       // Aggiungi altri modelli qui
     ],
@@ -129,8 +129,8 @@ export const projectConfig = {
         thumbnail: "/images/thumbnails/dashboard-costi.jpg",
         category: "Costi",
         tags: ["costi", "analisi", "budget"],
-        createdAt: "2023-09-10",
-        updatedAt: "2023-11-15",
+        // createdAt: "2023-09-10",
+        // updatedAt: "2023-11-15",
       },
       // {
       //   id: "dashboard-2",
@@ -160,8 +160,8 @@ export const projectConfig = {
         icon: "file-text", // Nome dell'icona Lucide (opzionale)
         category: "Documentazione Tecnica",
         tags: ["specifiche", "tecnico", "capitolato"],
-        createdAt: "2023-08-05",
-        updatedAt: "2023-10-10",
+        // createdAt: "2023-08-05",
+        // updatedAt: "2023-10-10",
       },
       {
         id: "doc-2",
@@ -173,8 +173,8 @@ export const projectConfig = {
         icon: "file-spreadsheet", // Nome dell'icona Lucide (opzionale)
         category: "Pianificazione",
         tags: ["timeline", "pianificazione", "gantt"],
-        createdAt: "2023-08-10",
-        updatedAt: "2023-10-15",
+        // createdAt: "2023-08-10",
+        // updatedAt: "2023-10-15",
       },
       {
         id: "doc-3",
@@ -186,8 +186,8 @@ export const projectConfig = {
         icon: "file-spreadsheet", // Nome dell'icona Lucide (opzionale)
         category: "Documentazione Tecnica",
         tags: ["relazione", "tecnico"],
-        createdAt: "2023-08-15",
-        updatedAt: "2023-10-20",
+        // createdAt: "2023-08-15",
+        // updatedAt: "2023-10-20",
       },
       {
         id: "doc-4",
@@ -199,8 +199,8 @@ export const projectConfig = {
         icon: "file-spreadsheet", // Nome dell'icona Lucide (opzionale)
         category: "Project Management",
         tags: ["verbali", "riunioni", "MoM", "project management", "coordinamento"],
-        createdAt: "2023-01-10",
-        updatedAt: "2025-04-23",
+        // createdAt: "2023-01-10",
+        // updatedAt: "2025-04-23",
       },
       {
         id: "doc-5",
@@ -212,8 +212,8 @@ export const projectConfig = {
         icon: "file-text", // Nome dell'icona Lucide (opzionale)
         category: "Project Management",
         tags: ["schema funzionale", "direzione sanitaria", "layout", "ospedale", "presentazione"],
-        createdAt: "2023-01-10",
-        updatedAt: "2025-04-23",
+        // createdAt: "2023-01-10",
+        // updatedAt: "2025-04-23",
       },
       {
         id: "doc-6",
@@ -225,21 +225,21 @@ export const projectConfig = {
         icon: "file-text", // Nome dell'icona Lucide (opzionale)
         category: "Project Management",
         tags: ["PFTE", "elaborati", "documentazione", "ospedale", "coordinamento"],
-        createdAt: "2023-01-10",
-        updatedAt: "2025-04-23",
+        // createdAt: "2023-01-10",
+        // updatedAt: "2025-04-23",
       },
       {
         id: "doc-7",
         name: "CRONO TORINO _ REV01",
         description:
           "Cronoprogramma ufficiale aggiornato alla REV01 del progetto 2560.24 Nuovo Ospedale ASL Città di Torino, comprensivo di tutte le fasi progettuali, autorizzative e procedurali. Il documento dettaglia attività in capo alla Stazione Appaltante, Enti e RTP, con scadenze chiave dalla firma del contratto fino alla validazione finale del PFTE. Include milestone strategiche come la consegna del PFTE Autorizzatorio, l’avvio indagini e la Conferenza dei Servizi.",
-        url: "https://...", // Inserire link diretto al documento condiviso (CDE, drive, ecc.)
+        url: "https://drive.google.com/file/d/1qCULC1yQ-yEPOcWWPidv63lznuNYNdm8/view?usp=drive_link", // Inserire link diretto al documento condiviso (CDE, drive, ecc.)
         type: "pdf",
         icon: "file-text", // icona Lucide consigliata per cronoprogrammi
         category: "Project Management",
         tags: ["cronoprogramma", "PFTE", "ospedale", "timeline", "scadenze"],
-        createdAt: "2025-04-23",
-        updatedAt: "2025-04-23"
+        // createdAt: "2025-04-23",
+        // updatedAt: "2025-04-23",
       },
       // Aggiungi altri documenti qui
     ],
@@ -256,8 +256,8 @@ export const projectConfig = {
         thumbnail: "/images/thumbnails/notebook-analisi-documenti.jpg",
         category: "Analisi Documenti",
         tags: ["ML", "NLP", "analisi", "documenti"],
-        createdAt: "2023-10-05",
-        updatedAt: "2023-11-10",
+        // createdAt: "2023-10-05",
+        // updatedAt: "2023-11-10",
         author: "R&D Team",
       },
       // {
