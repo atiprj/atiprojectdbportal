@@ -45,3 +45,24 @@ h5,
 h6 {
   letter-spacing: -0.03em;
 }
+
+/* Classi per le card delle risorse */
+.resource-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.resource-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.resource-card-content {
+  flex-grow: 1;
+}
+
+.resource-card-footer {
+  margin-top: auto;
+}

@@ -22,6 +22,7 @@ export default function HomePage() {
   const [modelsCount, setModelsCount] = useState<number>(0)
   const [dashboardsCount, setDashboardsCount] = useState<number>(0)
   const [documentsCount, setDocumentsCount] = useState<number>(0)
+  const [notebooksCount, setNotebooksCount] = useState<number>(0)
   const [mainMediaType, setMainMediaType] = useState<"image" | "video">("image")
   const [mainImage, setMainImage] = useState<string>("")
   const [mainVideo, setMainVideo] = useState<string>("")
@@ -37,6 +38,7 @@ export default function HomePage() {
     setModelsCount(getResourceCount("models"))
     setDashboardsCount(getResourceCount("dashboards"))
     setDocumentsCount(getResourceCount("documents"))
+    setNotebooksCount(getResourceCount("notebooks"))
     setMainMediaType(getMainMediaType())
     setMainImage(getMainImage())
     setMainVideo(getMainVideo())
@@ -45,6 +47,42 @@ export default function HomePage() {
     setStartDate(formatDate(getConfigValue("general.startDate", "")))
     setEndDate(formatDate(getConfigValue("general.endDate", "")))
   }, [])
+
+  // Dati delle risorse disponibili
+  const resourceCards = [
+    {
+      title: "Modelli 3D",
+      description: "Visualizza i modelli 3D del progetto",
+      count: modelsCount,
+      countText: `${modelsCount} modelli disponibili`,
+      href: "/models",
+      buttonText: "Visualizza Modelli",
+    },
+    {
+      title: "Dashboard",
+      description: "Analisi e dati del progetto",
+      count: dashboardsCount,
+      countText: `${dashboardsCount} dashboard disponibili`,
+      href: "/dashboards",
+      buttonText: "Visualizza Dashboard",
+    },
+    {
+      title: "Documenti",
+      description: "Documenti e file del progetto",
+      count: documentsCount,
+      countText: `${documentsCount} documenti disponibili`,
+      href: "/documents",
+      buttonText: "Visualizza Documenti",
+    },
+    {
+      title: "Notebook ML",
+      description: "Analisi ML dei documenti di progetto",
+      count: notebooksCount,
+      countText: `${notebooksCount} notebook disponibili`,
+      href: "/notebooks",
+      buttonText: "Visualizza Notebook",
+    },
+  ]
 
   return (
     <ProtectedRoute>
@@ -95,52 +133,27 @@ export default function HomePage() {
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold mb-6 text-center">Risorse Disponibili</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Modelli 3D</CardTitle>
-                  <CardDescription>Visualizza i modelli 3D del progetto</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">{modelsCount} modelli disponibili</p>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild className="w-full">
-                    <Link href="/models">Visualizza Modelli</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold">Risorse Disponibili</h2>
+            </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Dashboard</CardTitle>
-                  <CardDescription>Analisi e dati del progetto</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">{dashboardsCount} dashboard disponibili</p>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild className="w-full">
-                    <Link href="/dashboards">Visualizza Dashboard</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Documenti</CardTitle>
-                  <CardDescription>Documenti e file del progetto</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">{documentsCount} documenti disponibili</p>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild className="w-full">
-                    <Link href="/documents">Visualizza Documenti</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {resourceCards.map((card, index) => (
+                <Card key={index} className="flex flex-col h-full">
+                  <CardHeader className="flex-none">
+                    <CardTitle>{card.title}</CardTitle>
+                    <CardDescription>{card.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-sm text-muted-foreground">{card.countText}</p>
+                  </CardContent>
+                  <CardFooter className="flex-none pt-6">
+                    <Button asChild className="w-full">
+                      <Link href={card.href}>{card.buttonText}</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
             </div>
           </div>
         </section>

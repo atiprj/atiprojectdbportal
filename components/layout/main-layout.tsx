@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Building2, LogOut } from "lucide-react"
+import { Building2, LogOut, SearchIcon } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,6 +16,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { SearchBar } from "@/components/search/search-bar"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { getProjectName, getLogo, getPrimaryColor, getNavigation, getConfigValue } from "@/utils/config-utils"
 
 interface MainLayoutProps {
@@ -30,6 +32,7 @@ export function MainLayout({ children, className }: MainLayoutProps) {
   const [primaryColor, setPrimaryColor] = useState<string>("")
   const [navigation, setNavigation] = useState<any[]>([])
   const [clientName, setClientName] = useState<string>("")
+  const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
 
   // Carica le configurazioni lato client per evitare errori di idratazione
   useEffect(() => {
@@ -38,6 +41,7 @@ export function MainLayout({ children, className }: MainLayoutProps) {
     setPrimaryColor(getPrimaryColor())
     setNavigation(getNavigation())
     setClientName(getConfigValue("general.client", ""))
+    setIsSearchEnabled(getConfigValue("features.enableSearch", true))
   }, [])
 
   return (
@@ -54,6 +58,8 @@ export function MainLayout({ children, className }: MainLayoutProps) {
               <span className="text-xl font-bold">{projectName}</span>
             </Link>
           </div>
+
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             {navigation.map((item) => (
               <Link key={item.href} href={item.href} className="text-sm font-medium hover:text-primary">
@@ -61,7 +67,34 @@ export function MainLayout({ children, className }: MainLayoutProps) {
               </Link>
             ))}
           </nav>
+
           <div className="flex items-center gap-4">
+            {/* Search Button (Mobile) */}
+            {isSearchEnabled && (
+              <Sheet>
+                <SheetTrigger asChild className="md:hidden">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <SearchIcon className="h-5 w-5" />
+                    <span className="sr-only">Cerca</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="top" className="h-auto">
+                  <SheetHeader className="mb-4">
+                    <SheetTitle>Cerca nel progetto</SheetTitle>
+                    <SheetDescription>Cerca modelli, documenti, dashboard e altre risorse</SheetDescription>
+                  </SheetHeader>
+                  <SearchBar autoFocus />
+                </SheetContent>
+              </Sheet>
+            )}
+
+            {/* Search Bar (Desktop) */}
+            {isSearchEnabled && (
+              <div className="hidden md:block max-w-xs lg:max-w-md">
+                <SearchBar />
+              </div>
+            )}
+
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

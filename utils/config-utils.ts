@@ -48,12 +48,18 @@ export function isFeatureEnabled(featureName: string): boolean {
 }
 
 // Funzione per ottenere le risorse filtrate per categoria o tag
-export function getResourcesByCategory(resourceType: "models" | "dashboards" | "documents", category: string): any[] {
+export function getResourcesByCategory(
+  resourceType: "models" | "dashboards" | "documents" | "notebooks",
+  category: string,
+): any[] {
   const resources = projectConfig.externalLinks?.[resourceType] || []
   return resources.filter((resource) => resource.category === category)
 }
 
-export function getResourcesByTag(resourceType: "models" | "dashboards" | "documents", tag: string): any[] {
+export function getResourcesByTag(
+  resourceType: "models" | "dashboards" | "documents" | "notebooks",
+  tag: string,
+): any[] {
   const resources = projectConfig.externalLinks?.[resourceType] || []
   return resources.filter((resource) => resource.tags && resource.tags.includes(tag))
 }
@@ -69,12 +75,12 @@ export function getNavigation(): any[] {
 }
 
 // Funzione per ottenere il conteggio delle risorse
-export function getResourceCount(resourceType: "models" | "dashboards" | "documents"): number {
+export function getResourceCount(resourceType: "models" | "dashboards" | "documents" | "notebooks"): number {
   return projectConfig.externalLinks?.[resourceType]?.length || 0
 }
 
 // Funzione per ottenere tutte le risorse di un tipo
-export function getResources(resourceType: "models" | "dashboards" | "documents"): any[] {
+export function getResources(resourceType: "models" | "dashboards" | "documents" | "notebooks"): any[] {
   return projectConfig.externalLinks?.[resourceType] || []
 }
 
