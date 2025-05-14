@@ -66,3 +66,15 @@ h6 {
 .resource-card-footer {
   margin-top: auto;
 }
+
+/* Nascondi scrollbar ma mantieni la funzionalità */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

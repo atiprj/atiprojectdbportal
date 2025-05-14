@@ -1,25 +1,41 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { MainLayout } from "@/components/layout/main-layout"
 import { NotebookViewer } from "@/components/notebooks/notebook-viewer"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ExternalLink, Share2 } from "lucide-react"
+import { ExternalLink, Share2, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ProtectedRoute } from "@/components/auth/protected-route"
 import { getResources } from "@/utils/config-utils"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function NotebooksPage() {
+  const searchParams = useSearchParams()
+  const selectedId = searchParams.get("id")
+
   const [notebooks, setNotebooks] = useState<any[]>([])
   const [selectedNotebook, setSelectedNotebook] = useState<any>(null)
 
   useEffect(() => {
     const notebooksList = getResources("notebooks")
     setNotebooks(notebooksList)
+
+    // Se c'è un ID nei parametri di ricerca, seleziona quel notebook
+    if (selectedId) {
+      const notebook = notebooksList.find((n) => n.id === selectedId)
+      if (notebook) {
+        setSelectedNotebook(notebook)
+        return
+      }
+    }
+
+    // Altrimenti seleziona il primo notebook
     if (notebooksList.length > 0) {
       setSelectedNotebook(notebooksList[0])
     }
-  }, [])
+  }, [selectedId])
 
   if (!selectedNotebook) {
     return (
@@ -27,7 +43,13 @@ export default function NotebooksPage() {
         <MainLayout>
           <div className="max-w-7xl mx-auto w-full py-8 px-8 md:px-12">
             <h1 className="text-3xl font-bold mb-6">Notebook ML</h1>
-            <p>Nessun notebook disponibile.</p>
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Nessun notebook disponibile</AlertTitle>
+              <AlertDescription>
+                Non ci sono notebook disponibili in questo momento. Controlla più tardi o contatta l'amministratore.
+              </AlertDescription>
+            </Alert>
           </div>
         </MainLayout>
       </ProtectedRoute>

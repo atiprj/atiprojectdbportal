@@ -5,7 +5,7 @@
 export const projectConfig = {
   // Informazioni generali del progetto
   general: {
-    name: "2560.24 PPP FTE NEW Turin Hospital (TO)",
+    name: "FTE NEW Turin Hospital (TO)",
     description:
       "Il progetto riguarda la redazione del Progetto di Fattibilità Tecnica ed Economica (PFTE) per la realizzazione del nuovo Ospedale dell’ASL Città di Torino, localizzato nell’area urbana di Torino (NUTS ITC11). L’obiettivo è concepire una struttura sanitaria moderna, flessibile e sostenibile.",
     client: "ASL Città di Torino",

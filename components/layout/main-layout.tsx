@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Building2, LogOut, SearchIcon } from "lucide-react"
+import { Building2, LogOut, SearchIcon, Menu } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,6 +33,7 @@ export function MainLayout({ children, className }: MainLayoutProps) {
   const [navigation, setNavigation] = useState<any[]>([])
   const [clientName, setClientName] = useState<string>("")
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Carica le configurazioni lato client per evitare errori di idratazione
   useEffect(() => {
@@ -47,32 +48,68 @@ export function MainLayout({ children, className }: MainLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="border-b">
-        <div className="max-w-7xl mx-auto w-full flex h-16 items-center justify-between py-4 px-8 md:px-12">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2">
+        <div className="max-w-7xl mx-auto w-full flex h-16 items-center justify-between py-4 px-4 md:px-8">
+          {/* Logo e titolo del progetto */}
+          <div className="flex items-center gap-2 min-w-0 max-w-[40%] lg:max-w-xs">
+            <Link href="/" className="flex items-center gap-2 min-w-0">
               {logo ? (
-                <img src={logo || "/placeholder.svg"} alt={projectName} className="h-8 w-8" />
+                <img src={logo || "/placeholder.svg"} alt="" className="h-8 w-8 flex-shrink-0" />
               ) : (
-                <Building2 className="h-6 w-6" style={{ color: primaryColor }} />
+                <Building2 className="h-6 w-6 flex-shrink-0" style={{ color: primaryColor }} />
               )}
-              <span className="text-xl font-bold">{projectName}</span>
+              <span className="text-base md:text-lg font-bold truncate">{projectName}</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navigation.map((item) => (
-              <Link key={item.href} href={item.href} className="text-sm font-medium hover:text-primary">
-                {item.name}
-              </Link>
-            ))}
+          <nav className="hidden lg:flex items-center justify-center flex-1 px-4">
+            <div className="flex items-center gap-4 xl:gap-6 overflow-x-auto no-scrollbar">
+              {navigation.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm font-medium whitespace-nowrap hover:text-primary"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
           </nav>
 
-          <div className="flex items-center gap-4">
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden flex items-center">
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[250px] sm:w-[300px]">
+                <SheetHeader className="mb-4">
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-4">
+                  {navigation.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="text-sm font-medium hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          <div className="flex items-center gap-2">
             {/* Search Button (Mobile) */}
             {isSearchEnabled && (
               <Sheet>
-                <SheetTrigger asChild className="md:hidden">
+                <SheetTrigger asChild className="lg:hidden">
                   <Button variant="ghost" size="icon" className="h-9 w-9">
                     <SearchIcon className="h-5 w-5" />
                     <span className="sr-only">Cerca</span>
@@ -90,7 +127,7 @@ export function MainLayout({ children, className }: MainLayoutProps) {
 
             {/* Search Bar (Desktop) */}
             {isSearchEnabled && (
-              <div className="hidden md:block max-w-xs lg:max-w-md">
+              <div className="hidden lg:block w-[180px] xl:w-[240px]">
                 <SearchBar />
               </div>
             )}
