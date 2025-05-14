@@ -7,9 +7,9 @@ export const projectConfig = {
   general: {
     name: "Nome Progetto",
     description:
-      "Descrizione dettagliata del progetto che può essere anche piuttosto lunga e articolata. Questo testo verrà visualizzato nella homepage e fornirà una panoramica generale del progetto, dei suoi obiettivi e delle sue caratteristiche principali.",
-    client: "Nome Cliente",
-    location: "Località del Progetto",
+      "Il progetto riguarda la redazione del Progetto di Fattibilità Tecnica ed Economica (PFTE) per la realizzazione del nuovo Ospedale dell’ASL Città di Torino, localizzato nell’area urbana di Torino (NUTS ITC11). L’obiettivo è concepire una struttura sanitaria moderna, flessibile e sostenibile, in grado di ospitare 600 posti letto complessivi (di cui 50 in terapia intensiva), suddivisi in reparti per acuti, day hospital e servizi ambulatoriali polifunzionali.",
+    client: "ASL Città di Torino",
+    location: "Torino (IT)",
     startDate: "2023-01-01",
     endDate: "2024-12-31",
     status: "In corso", // In corso, Completato, In fase di pianificazione, ecc.
@@ -17,7 +17,7 @@ export const projectConfig = {
     // Immagine o video principale del progetto (mostrato nella homepage)
     mainMedia: {
       type: "image", // "image" o "video"
-      image: "/images/progetto-principale.jpg", // Percorso relativo alla cartella public
+      image: "/images/Progetto.jpg", // Percorso relativo alla cartella public
       video: "", // URL di un video (es. YouTube embed URL)
       alt: "Vista principale del progetto", // Testo alternativo per l'immagine
     },
