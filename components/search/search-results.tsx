@@ -108,7 +108,12 @@ export function SearchResults({ query, className }: SearchResultsProps) {
           <h2 className="text-lg font-medium mb-4">{getTypeLabel(type)}s</h2>
           <div className="space-y-4">
             {items.map((result) => (
-              <Link key={result.id} href={result.url}>
+              <Link
+                key={result.id}
+                href={result.type === "document" ? result.originalUrl || result.url : result.url}
+                target={result.type === "document" ? "_blank" : "_self"}
+                rel={result.type === "document" ? "noopener noreferrer" : ""}
+              >
                 <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
                   <CardHeader className="p-4">
                     <div className="flex items-start gap-3">

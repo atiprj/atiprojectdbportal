@@ -16,7 +16,7 @@ export default function SearchPage() {
         <div className="max-w-7xl mx-auto w-full py-8 px-8 md:px-12">
           <div className="max-w-3xl mx-auto mb-8">
             <h1 className="text-3xl font-bold mb-6">Ricerca</h1>
-            <SearchBar autoFocus placeholder="Cerca modelli, documenti, dashboard..." />
+            <SearchBar autoFocus placeholder="Cerca modelli, documenti, dashboard..." defaultValue={query} />
           </div>
 
           <SearchResults query={query} />

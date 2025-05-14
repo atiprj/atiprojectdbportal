@@ -67,6 +67,7 @@ function searchDocuments(query: string): any[] {
       ...document,
       type: "document",
       url: `/documents?id=${document.id}`,
+      originalUrl: document.url, // Aggiungiamo l'URL originale del documento
     }))
 }
 

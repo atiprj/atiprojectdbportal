@@ -5,8 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { MainLayout } from "@/components/layout/main-layout"
 import { NotebookViewer } from "@/components/notebooks/notebook-viewer"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ExternalLink, Share2, AlertTriangle } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { AlertTriangle } from "lucide-react"
 import { ProtectedRoute } from "@/components/auth/protected-route"
 import { getResources } from "@/utils/config-utils"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -85,38 +84,7 @@ export default function NotebooksPage() {
               </div>
             </div>
             <div className="lg:col-span-3">
-              <NotebookViewer
-                url={selectedNotebook.url}
-                title={selectedNotebook.name}
-                type={selectedNotebook.type as "colab" | "jupyter" | "other"}
-              />
-              <div className="p-4 bg-white border border-t-0 rounded-b-md">
-                <h3 className="text-lg font-medium mb-1">{selectedNotebook.name}</h3>
-                <p className="text-sm text-muted-foreground mb-2">{selectedNotebook.description}</p>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {selectedNotebook.tags &&
-                    selectedNotebook.tags.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <a href={selectedNotebook.url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Apri in {selectedNotebook.type === "colab" ? "Google Colab" : "Notebook"}
-                    </a>
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Condividi
-                  </Button>
-                </div>
-              </div>
+              <NotebookViewer notebook={selectedNotebook} />
             </div>
           </div>
         </div>

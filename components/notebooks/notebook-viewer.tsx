@@ -1,120 +1,158 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Maximize2, ExternalLink, AlertTriangle } from "lucide-react"
+import { useState } from "react"
+import { ExternalLink, FileText, Code, BookOpen, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 interface NotebookViewerProps {
-  url: string
-  title: string
-  type?: "colab" | "jupyter" | "other"
+  notebook: {
+    id: string
+    name: string
+    description: string
+    url: string
+    type: string
+    author?: string
+    updatedAt?: string
+    tags?: string[]
+    thumbnail?: string
+  }
 }
 
-export function NotebookViewer({ url, title, type = "colab" }: NotebookViewerProps) {
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
+export function NotebookViewer({ notebook }: NotebookViewerProps) {
+  const [copied, setCopied] = useState(false)
 
-  // Assicuriamoci che l'URL sia formattato correttamente per l'embedding
-  const getEmbedUrl = (url: string, type: string) => {
-    if (type === "colab") {
-      // Se l'URL è già un URL di embedding, lo restituiamo così com'è
-      if (url.includes("outputonly=1") || url.includes("embedded=true")) {
-        return url
-      }
+  // Funzione per copiare l'URL negli appunti
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(notebook.url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
 
-      // Altrimenti, aggiungiamo i parametri per l'embedding
-      const separator = url.includes("?") ? "&" : "?"
-      return `${url}${separator}outputonly=1&embedded=true`
+  // Formatta la data
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return ""
+    try {
+      return new Date(dateString).toLocaleDateString("it-IT", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    } catch (e) {
+      return dateString
     }
-
-    return url
   }
-
-  const embedUrl = getEmbedUrl(url, type)
-
-  // Gestisce il caricamento e gli errori dell'iframe
-  const handleIframeLoad = () => {
-    setIsLoading(false)
-  }
-
-  const handleIframeError = () => {
-    setIsLoading(false)
-    setHasError(true)
-  }
-
-  // Resetta lo stato quando cambia l'URL
-  useEffect(() => {
-    setIsLoading(true)
-    setHasError(false)
-  }, [url])
 
   return (
-    <div className="border rounded-md overflow-hidden relative">
-      <div className="absolute top-2 right-2 z-10 flex gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="bg-white/90 h-8 w-8"
-          onClick={() => setIsFullscreen(!isFullscreen)}
-        >
-          <Maximize2 className="h-4 w-4" />
-        </Button>
-      </div>
+    <div className="space-y-6">
+      {/* Intestazione del notebook */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-xl mb-1">{notebook.name}</CardTitle>
+              <CardDescription>
+                {notebook.author && <span className="font-medium">{notebook.author}</span>}
+                {notebook.author && notebook.updatedAt && <span> • </span>}
+                {notebook.updatedAt && <span>Aggiornato il {formatDate(notebook.updatedAt)}</span>}
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <a href={notebook.url} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Apri in Google Colab
+              </a>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">{notebook.description}</p>
 
-      <div className={`aspect-video ${isFullscreen ? "fixed inset-0 z-50 aspect-auto" : ""}`}>
-        {isLoading && (
-          <div className="w-full h-full flex items-center justify-center bg-muted">
-            <div className="animate-pulse text-center">
-              <div className="h-8 w-32 bg-muted-foreground/20 rounded-md mx-auto mb-4"></div>
-              <div className="h-4 w-48 bg-muted-foreground/20 rounded-md mx-auto"></div>
+          {/* Tag del notebook */}
+          {notebook.tags && notebook.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {notebook.tags.map((tag) => (
+                <Badge key={tag} variant="secondary">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Anteprima statica o immagine */}
+          <div className="mt-4 border rounded-md overflow-hidden">
+            {notebook.thumbnail ? (
+              <img
+                src={notebook.thumbnail || "/placeholder.svg"}
+                alt={`Anteprima di ${notebook.name}`}
+                className="w-full object-cover"
+              />
+            ) : (
+              <div className="bg-muted p-8 flex flex-col items-center justify-center text-center">
+                <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">Anteprima non disponibile</h3>
+                <p className="text-sm text-muted-foreground max-w-md">
+                  Questo notebook richiede l'accesso a Google Colab. Clicca sul pulsante "Apri in Google Colab" per
+                  visualizzare il contenuto completo.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Azioni aggiuntive */}
+          <div className="flex flex-wrap gap-2 mt-6">
+            <Button variant="outline" size="sm" onClick={copyToClipboard}>
+              {copied ? "URL copiato!" : "Copia URL"}
+            </Button>
+            <Button variant="outline" size="sm">
+              <Share2 className="h-4 w-4 mr-2" />
+              Condividi
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Informazioni sul notebook */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Informazioni sul notebook</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="flex items-start gap-3">
+            <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
+            <div>
+              <h4 className="font-medium mb-1">Descrizione</h4>
+              <p className="text-sm text-muted-foreground">{notebook.description}</p>
             </div>
           </div>
-        )}
 
-        {hasError ? (
-          <div className="w-full h-full flex items-center justify-center bg-background p-6">
-            <Alert variant="destructive" className="max-w-md">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Errore di accesso al notebook</AlertTitle>
-              <AlertDescription>
-                Non è possibile visualizzare questo notebook. Potrebbe essere necessaria l'autorizzazione o il notebook
-                potrebbe non essere più disponibile.
-              </AlertDescription>
-              <div className="mt-4">
-                <Button variant="outline" size="sm" asChild>
-                  <a href={url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Apri in {type === "colab" ? "Google Colab" : "Notebook"}
-                  </a>
-                </Button>
-              </div>
-            </Alert>
+          <div className="flex items-start gap-3">
+            <Code className="h-5 w-5 text-muted-foreground mt-0.5" />
+            <div>
+              <h4 className="font-medium mb-1">Funzionalità</h4>
+              <p className="text-sm text-muted-foreground">
+                Questo notebook utilizza tecniche di NLP per analizzare i documenti del progetto, estrarre informazioni
+                chiave e generare insights.
+              </p>
+            </div>
           </div>
-        ) : (
-          <iframe
-            src={embedUrl}
-            className={`w-full h-full ${isLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}
-            title={title}
-            allowFullScreen
-            onLoad={handleIframeLoad}
-            onError={handleIframeError}
-          />
-        )}
-      </div>
 
-      <div className="p-4 bg-white">
-        <h3 className="text-lg font-medium mb-1">{title}</h3>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Apri in {type === "colab" ? "Google Colab" : "Notebook"}
-            </a>
-          </Button>
-        </div>
-      </div>
+          <div className="flex items-start gap-3">
+            <BookOpen className="h-5 w-5 text-muted-foreground mt-0.5" />
+            <div>
+              <h4 className="font-medium mb-1">Come utilizzare questo notebook</h4>
+              <ol className="text-sm text-muted-foreground space-y-2 ml-4 list-decimal">
+                <li>Clicca su "Apri in Google Colab" per aprire il notebook nel tuo browser</li>
+                <li>Accedi con il tuo account Google se richiesto</li>
+                <li>Utilizza il menu "Runtime" per eseguire le celle del notebook</li>
+                <li>Segui le istruzioni all'interno del notebook per l'analisi dei documenti</li>
+              </ol>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

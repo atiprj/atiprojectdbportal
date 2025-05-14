@@ -88,32 +88,32 @@ export const projectConfig = {
   externalLinks: {
     // Modelli 3D (Speckle, BIMPlus, ecc.)
     models: [
-      // {
-      //   id: "model-1",
-      //   name: "Modello Architettonico",
-      //   description:
-      //     "Modello 3D completo dell'edificio che include tutti gli elementi architettonici, come muri, pavimenti, soffitti, porte, finestre e scale. Questo modello è stato creato utilizzando Revit e poi esportato in Speckle per la visualizzazione online.",
-      //   url: "https://speckle.xyz/embed?stream=8a0f2c5be8&commit=9bd8171f4c",
-      //   type: "speckle", // speckle, bimplus, altro
-      //   thumbnail: "/images/thumbnails/modello-architettonico.jpg", // Percorso relativo alla cartella public
-      //   category: "Architettura",
-      //   tags: ["architettura", "3D", "BIM"],
-      //   createdAt: "2023-10-15",
-      //   updatedAt: "2023-11-20",
-      // },
-      // {
-      //   id: "model-2",
-      //   name: "Modello Strutturale",
-      //   description:
-      //     "Struttura portante dell'edificio che include fondazioni, pilastri, travi e solai. Questo modello è stato creato da ingegneri strutturali per analizzare la stabilità e la resistenza dell'edificio.",
-      //   url: "https://speckle.xyz/embed?stream=8a0f2c5be8&commit=9bd8171f4c",
-      //   type: "speckle",
-      //   thumbnail: "/images/thumbnails/modello-strutturale.jpg",
-      //   category: "Strutture",
-      //   tags: ["strutture", "3D", "BIM"],
-      //   createdAt: "2023-10-20",
-      //   updatedAt: "2023-11-25",
-      // },
+      {
+        id: "model-1",
+        name: "Modello Architettonico",
+        description:
+          "Modello 3D completo dell'edificio che include tutti gli elementi architettonici, come muri, pavimenti, soffitti, porte, finestre e scale. Questo modello è stato creato utilizzando Revit e poi esportato in Speckle per la visualizzazione online.",
+        url: "https://speckle.xyz/embed?stream=8a0f2c5be8&commit=9bd8171f4c",
+        type: "speckle", // speckle, bimplus, altro
+        thumbnail: "/images/thumbnails/modello-architettonico.jpg", // Percorso relativo alla cartella public
+        category: "Architettura",
+        tags: ["architettura", "3D", "BIM"],
+        createdAt: "2023-10-15",
+        updatedAt: "2023-11-20",
+      },
+      {
+        id: "model-2",
+        name: "Modello Strutturale",
+        description:
+          "Struttura portante dell'edificio che include fondazioni, pilastri, travi e solai. Questo modello è stato creato da ingegneri strutturali per analizzare la stabilità e la resistenza dell'edificio.",
+        url: "https://speckle.xyz/embed?stream=8a0f2c5be8&commit=9bd8171f4c",
+        type: "speckle",
+        thumbnail: "/images/thumbnails/modello-strutturale.jpg",
+        category: "Strutture",
+        tags: ["strutture", "3D", "BIM"],
+        createdAt: "2023-10-20",
+        updatedAt: "2023-11-25",
+      },
       // Aggiungi altri modelli qui
     ],
 
@@ -162,7 +162,6 @@ export const projectConfig = {
         tags: ["specifiche", "tecnico", "capitolato"],
         createdAt: "2023-08-05",
         updatedAt: "2023-10-10",
-        size: "2.5 MB",
       },
       {
         id: "doc-2",
@@ -176,7 +175,6 @@ export const projectConfig = {
         tags: ["timeline", "pianificazione", "gantt"],
         createdAt: "2023-08-10",
         updatedAt: "2023-10-15",
-        size: "1.8 MB",
       },
       {
         id: "doc-3",
@@ -190,7 +188,6 @@ export const projectConfig = {
         tags: ["relazione", "tecnico"],
         createdAt: "2023-08-15",
         updatedAt: "2023-10-20",
-        size: "3.2 MB",
       },
       {
         id: "doc-4",
@@ -244,8 +241,6 @@ export const projectConfig = {
         createdAt: "2025-04-23",
         updatedAt: "2025-04-23"
       },
-
-
       // Aggiungi altri documenti qui
     ],
 
@@ -263,7 +258,7 @@ export const projectConfig = {
         tags: ["ML", "NLP", "analisi", "documenti"],
         createdAt: "2023-10-05",
         updatedAt: "2023-11-10",
-        author: "Data Science Team",
+        author: "R&D Team",
       },
       // {
       //   id: "notebook-2",
@@ -348,13 +343,14 @@ export const projectConfig = {
       instagram: "https://www.instagram.com/atiproject/?hl=it",
     },
   },
+
   // Autenticazione e sicurezza
   auth: {
     requireLogin: true, // Se true, richiede l'autenticazione per accedere al sito
     allowRegistration: false, // Se true, consente agli utenti di registrarsi
     demoCredentials: {
-      username: "admin",
-      password: "password",
+      username: "bimuser",
+      password: "2560",
     },
   },
 

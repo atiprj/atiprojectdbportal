@@ -1,4 +1,14 @@
-import { FileText, FileIcon, ExternalLink, Download } from "lucide-react"
+import {
+  FileText,
+  FileIcon,
+  ExternalLink,
+  Download,
+  FileIcon as FilePdf,
+  FileSpreadsheet,
+  FileCode,
+  FileArchive,
+  FileImage,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface DocumentCardProps {
@@ -10,23 +20,45 @@ interface DocumentCardProps {
 }
 
 export function DocumentCard({ name, description, url, type, updatedAt }: DocumentCardProps) {
-  // Restituisce l'icona appropriata per il tipo di file
+  // Restituisce l'icona appropriata per il tipo di file con dimensioni maggiori
   const getFileIcon = (fileType: string) => {
+    const iconSize = "h-6 w-6" // Aumentiamo la dimensione delle icone
+
     switch (fileType.toLowerCase()) {
       case "pdf":
-        return <FileText className="h-4 w-4 text-red-500" />
+        return <FilePdf className={`${iconSize} text-red-500`} />
       case "xlsx":
-        return <FileText className="h-4 w-4 text-green-500" />
+      case "xls":
+      case "csv":
+        return <FileSpreadsheet className={`${iconSize} text-green-500`} />
       case "docx":
-        return <FileText className="h-4 w-4 text-blue-500" />
+      case "doc":
+        return <FileText className={`${iconSize} text-blue-500`} />
+      case "ppt":
+      case "pptx":
+        return <FileText className={`${iconSize} text-orange-500`} />
+      case "zip":
+      case "rar":
+        return <FileArchive className={`${iconSize} text-purple-500`} />
+      case "jpg":
+      case "png":
+      case "gif":
+        return <FileImage className={`${iconSize} text-pink-500`} />
+      case "js":
+      case "ts":
+      case "py":
+      case "json":
+        return <FileCode className={`${iconSize} text-yellow-500`} />
       default:
-        return <FileIcon className="h-4 w-4 text-muted-foreground" />
+        return <FileIcon className={`${iconSize} text-gray-500`} />
     }
   }
 
   return (
     <div className="flex items-center justify-between p-4 border rounded-md">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
+        {" "}
+        {/* Aumentiamo lo spazio tra icona e testo */}
         {getFileIcon(type)}
         <div>
           <h3 className="font-medium">{name}</h3>
