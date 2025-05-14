@@ -1,0 +1,18 @@
+public/
+├── images/
+│   ├── logo.png                    # Logo del progetto
+│   ├── progetto-principale.jpg     # Immagine principale
+│   ├── gallery/                    # Immagini della galleria
+│   │   ├── vista-frontale.jpg
+│   │   ├── vista-laterale.jpg
+│   │   └── interni.jpg
+│   ├── thumbnails/                 # Miniature per modelli e dashboard
+│   │   ├── modello-architettonico.jpg
+│   │   ├── modello-strutturale.jpg
+│   │   ├── dashboard-costi.jpg
+│   │   └── dashboard-cronoprogramma.jpg
+│   └── team/                       # Foto del team
+│       ├── mario-rossi.jpg
+│       ├── laura-bianchi.jpg
+│       └── giovanni-verdi.jpg
+├── favicon.ico                     # Favicon del sito
