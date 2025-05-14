@@ -62,7 +62,7 @@ export function NotebookViewer({ notebook }: NotebookViewerProps) {
             <Button variant="outline" size="sm" asChild>
               <a href={notebook.url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4 mr-2" />
-                Apri in Google Colab
+                Apri in NotebookLM
               </a>
             </Button>
           </div>
@@ -81,35 +81,23 @@ export function NotebookViewer({ notebook }: NotebookViewerProps) {
             </div>
           )}
 
-          {/* Anteprima statica o immagine */}
-          <div className="mt-4 border rounded-md overflow-hidden">
-            {notebook.thumbnail ? (
-              <img
-                src={notebook.thumbnail || "/placeholder.svg"}
-                alt={`Anteprima di ${notebook.name}`}
-                className="w-full object-cover"
-              />
-            ) : (
-              <div className="bg-muted p-8 flex flex-col items-center justify-center text-center">
-                <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Anteprima non disponibile</h3>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Questo notebook richiede l'accesso a Google Colab. Clicca sul pulsante "Apri in Google Colab" per
-                  visualizzare il contenuto completo.
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Azioni aggiuntive */}
-          <div className="flex flex-wrap gap-2 mt-6">
-            <Button variant="outline" size="sm" onClick={copyToClipboard}>
-              {copied ? "URL copiato!" : "Copia URL"}
-            </Button>
-            <Button variant="outline" size="sm">
-              <Share2 className="h-4 w-4 mr-2" />
-              Condividi
-            </Button>
+          {/* Informazioni sul notebook */}
+          <div className="mt-4">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <a href={notebook.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Apri in NotebookLM
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" onClick={copyToClipboard}>
+                {copied ? "URL copiato!" : "Copia URL"}
+              </Button>
+              <Button variant="outline" size="sm">
+                <Share2 className="h-4 w-4 mr-2" />
+                Condividi
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -133,8 +121,8 @@ export function NotebookViewer({ notebook }: NotebookViewerProps) {
             <div>
               <h4 className="font-medium mb-1">Funzionalità</h4>
               <p className="text-sm text-muted-foreground">
-                Questo notebook utilizza tecniche di NLP per analizzare i documenti del progetto, estrarre informazioni
-                chiave e generare insights.
+                Questo notebook utilizza NotebookLM, uno strumento basato su modelli di linguaggio avanzati, per
+                analizzare i documenti del progetto, estrarre informazioni chiave e generare insights.
               </p>
             </div>
           </div>
@@ -144,10 +132,10 @@ export function NotebookViewer({ notebook }: NotebookViewerProps) {
             <div>
               <h4 className="font-medium mb-1">Come utilizzare questo notebook</h4>
               <ol className="text-sm text-muted-foreground space-y-2 ml-4 list-decimal">
-                <li>Clicca su "Apri in Google Colab" per aprire il notebook nel tuo browser</li>
+                <li>Clicca su "Apri in NotebookLM" per aprire il notebook nel tuo browser</li>
                 <li>Accedi con il tuo account Google se richiesto</li>
-                <li>Utilizza il menu "Runtime" per eseguire le celle del notebook</li>
-                <li>Segui le istruzioni all'interno del notebook per l'analisi dei documenti</li>
+                <li>Interagisci con i documenti caricati utilizzando l'interfaccia di NotebookLM</li>
+                <li>Utilizza le funzionalità di AI per analizzare e comprendere i documenti del progetto</li>
               </ol>
             </div>
           </div>

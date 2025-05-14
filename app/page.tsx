@@ -75,12 +75,12 @@ export default function HomePage() {
       buttonText: "Visualizza Documenti",
     },
     {
-      title: "Notebook ML",
-      description: "Analisi ML dei documenti di progetto",
+      title: "NotebookLM",
+      description: "Analisi AI dei documenti di progetto",
       count: notebooksCount,
       countText: `${notebooksCount} notebook disponibili`,
       href: "/notebooks",
-      buttonText: "Visualizza Notebook",
+      buttonText: "Visualizza NotebookLM",
     },
   ]
 

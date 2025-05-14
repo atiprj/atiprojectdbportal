@@ -41,12 +41,12 @@ export default function NotebooksPage() {
       <ProtectedRoute>
         <MainLayout>
           <div className="max-w-7xl mx-auto w-full py-8 px-8 md:px-12">
-            <h1 className="text-3xl font-bold mb-6">Notebook ML</h1>
+            <h1 className="text-3xl font-bold mb-6">NotebookLM</h1>
             <Alert>
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Nessun notebook disponibile</AlertTitle>
+              <AlertTitle>Nessun NotebookLM disponibile</AlertTitle>
               <AlertDescription>
-                Non ci sono notebook disponibili in questo momento. Controlla più tardi o contatta l'amministratore.
+                Non ci sono NotebookLM disponibili in questo momento. Controlla più tardi o contatta l'amministratore.
               </AlertDescription>
             </Alert>
           </div>
@@ -59,7 +59,7 @@ export default function NotebooksPage() {
     <ProtectedRoute>
       <MainLayout>
         <div className="max-w-7xl mx-auto w-full py-8 px-8 md:px-12">
-          <h1 className="text-3xl font-bold mb-6">Notebook ML</h1>
+          <h1 className="text-3xl font-bold mb-6">NotebookLM</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-1">
