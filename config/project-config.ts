@@ -25,7 +25,7 @@ export const projectConfig = {
 
   // Branding e UI
   branding: {
-    logo: "/images/logo.png", // Logo del progetto (percorso relativo alla cartella public)
+    logo: "/images/ATI.png", // Logo del progetto (percorso relativo alla cartella public)
     favicon: "/favicon.ico", // Favicon del sito
     primaryColor: "#0f766e", // Colore principale del progetto (teal-700)
     secondaryColor: "#0284c7", // Colore secondario (sky-600)
@@ -124,7 +124,7 @@ export const projectConfig = {
         name: "HLT Funzionale",
         description:
           "Dashboard interattiva dedicata all’organizzazione funzionale dell’ospedale. Consente di esplorare la distribuzione degli spazi per reparti, percorsi pulito/sporco, flussi di pazienti, personale e materiali. Integra mappe planimetriche dinamiche, indicatori di efficienza operativa e analisi delle superfici per destinazione d’uso, supportando scelte progettuali e verifiche di conformità normativa.",
-        url: "https://app.powerbi.com/view?r=eyJrIjoiNjI4OTBlY2YtOTAzZi00ZWFhLTk5YWYtY2JlOTgxZjgyYmI1IiwidCI6IjZlY2FkODZiLWUwYjktNDFjNi1iMjcyLTU1MmZlMDJkMmUxMSIsImMiOjl9",
+        url: "https://app.powerbi.com/view?r=eyJrIjoiNGJiYjEwZTktODhkYS00ZDg0LWEwYjEtNTVlNzhlMDkxMWYxIiwidCI6IjZlY2FkODZiLWUwYjktNDFjNi1iMjcyLTU1MmZlMDJkMmUxMSIsImMiOjl9",
         type: "powerbi", // powerbi, tableau, altro
         thumbnail: "/images/thumbnails/dashboard-costi.jpg",
         category: "Costi",
