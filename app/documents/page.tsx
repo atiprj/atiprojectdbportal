@@ -14,7 +14,6 @@ import {
   FileArchive,
   FileImage,
   FileIcon,
-  Download,
   ExternalLink,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -146,10 +145,6 @@ export default function DocumentsPage() {
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Apri
                       </a>
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
-                      Scarica
                     </Button>
                   </div>
                 </div>

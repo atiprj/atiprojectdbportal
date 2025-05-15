@@ -1,16 +1,17 @@
 "use client"
 
+import { CardFooter } from "@/components/ui/card"
+
 import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Building2, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/hooks/use-auth"
-import { projectConfig } from "@/config/project-config"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -45,15 +46,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/40 px-8 py-8">
       <Card className="w-full max-w-md mx-auto shadow-lg">
-        <CardHeader className="space-y-3">
-          <div className="flex items-center justify-center mb-2">
-            <div className="flex items-center gap-2">
-              {projectConfig.logo ? (
-                <img src={projectConfig.logo || "/placeholder.svg"} alt={projectConfig.name} className="h-8 w-8" />
-              ) : (
-                <Building2 className="h-6 w-6" style={{ color: projectConfig.primaryColor }} />
-              )}
-              <span className="text-xl font-bold">{projectConfig.name}</span>
+        <CardHeader className="space-y-1">
+          <div className="flex items-center justify-center mb-1">
+            <div className="flex flex-col items-center gap-2">
+              <img src="/images/logo.png" alt="Nuovo Ospedale Torino" className="h-80" />
             </div>
           </div>
           <CardTitle className="text-2xl text-center">Accedi al Progetto</CardTitle>

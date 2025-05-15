@@ -2,12 +2,11 @@ import {
   FileText,
   FileIcon,
   ExternalLink,
-  Download,
-  FileIcon as FilePdf,
   FileSpreadsheet,
   FileCode,
   FileArchive,
   FileImage,
+  FileIcon as FilePdf,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -72,9 +71,6 @@ export function DocumentCard({ name, description, url, type, updatedAt }: Docume
             <ExternalLink className="h-4 w-4 mr-2" />
             Apri
           </a>
-        </Button>
-        <Button variant="ghost" size="icon">
-          <Download className="h-4 w-4" />
         </Button>
       </div>
     </div>
