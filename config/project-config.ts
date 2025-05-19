@@ -92,8 +92,8 @@ export const projectConfig = {
         id: "model-1",
         name: "Modello Architettonico",
         description:
-          "Modello 3D completo dell'edificio che include tutti gli elementi architettonici, come muri, pavimenti, soffitti, porte, finestre e scale. Questo modello è stato creato utilizzando Revit e poi esportato in Speckle per la visualizzazione online.",
-        url: "https://speckle.xyz/embed?stream=8a0f2c5be8&commit=9bd8171f4c",
+          "Modello 3D Aree funzionali",
+        url: "https://app.speckle.systems/projects/7b28ac5ea4/models/dbdbc612da",
         type: "speckle", // speckle, bimplus, altro
         thumbnail: "/images/thumbnails/modello-architettonico.jpg", // Percorso relativo alla cartella public
         category: "Architettura",
@@ -101,19 +101,19 @@ export const projectConfig = {
         // createdAt: "2023-10-15",
         // updatedAt: "2023-11-20",
       },
-      {
-        id: "model-2",
-        name: "Modello Strutturale",
-        description:
-          "Struttura portante dell'edificio che include fondazioni, pilastri, travi e solai. Questo modello è stato creato da ingegneri strutturali per analizzare la stabilità e la resistenza dell'edificio.",
-        url: "https://speckle.xyz/embed?stream=8a0f2c5be8&commit=9bd8171f4c",
-        type: "speckle",
-        thumbnail: "/images/thumbnails/modello-strutturale.jpg",
-        category: "Strutture",
-        tags: ["strutture", "3D", "BIM"],
-        // createdAt: "2023-10-20",
-        // updatedAt: "2023-11-25",
-      },
+      // {
+      //   id: "model-2",
+      //   name: "Modello Strutturale",
+      //   description:
+      //     "Struttura portante dell'edificio che include fondazioni, pilastri, travi e solai. Questo modello è stato creato da ingegneri strutturali per analizzare la stabilità e la resistenza dell'edificio.",
+      //   url: "https://speckle.xyz/embed?stream=8a0f2c5be8&commit=9bd8171f4c",
+      //   type: "speckle",
+      //   thumbnail: "/images/thumbnails/modello-strutturale.jpg",
+      //   category: "Strutture",
+      //   tags: ["strutture", "3D", "BIM"],
+      //   // createdAt: "2023-10-20",
+      //   // updatedAt: "2023-11-25",
+      // },
       // Aggiungi altri modelli qui
     ],
 
