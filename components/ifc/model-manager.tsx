@@ -69,7 +69,9 @@ export function ModelManager({
         {modelList.map((modelInfo) => (
           <Card
             key={modelInfo.id}
-            className={`${isDarkTheme ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-200"}`}
+            className={`shadow-sm border ${
+              isDarkTheme ? "bg-gray-800/95 border-gray-700/80" : "bg-gray-50/95 border-gray-200/80"
+            } backdrop-blur-sm`}
           >
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center justify-between">

@@ -281,17 +281,17 @@ export function ClassificationTree({ models, fragments, isModelLoaded }: Classif
                     <div key={group.name}>
                       {/* Group Header */}
                       <div
-                        className={`flex items-center py-1 cursor-pointer rounded px-1 ${
-                          isDarkTheme ? "hover:bg-gray-800/50" : "hover:bg-gray-100/50"
+                        className={`flex items-center py-2 cursor-pointer rounded px-2 font-medium ${
+                          isDarkTheme ? "hover:bg-gray-700/50 text-gray-100" : "hover:bg-gray-100/50 text-gray-900"
                         }`}
                         onClick={() => toggleGroupExpansion(groupIndex)}
                       >
                         {group.expanded ? (
-                          <ChevronDown className={`h-4 w-4 mr-1 ${isDarkTheme ? "text-gray-400" : "text-gray-500"}`} />
+                          <ChevronDown className={`h-4 w-4 mr-2 ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`} />
                         ) : (
-                          <ChevronRight className={`h-4 w-4 mr-1 ${isDarkTheme ? "text-gray-400" : "text-gray-500"}`} />
+                          <ChevronRight className={`h-4 w-4 mr-2 ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`} />
                         )}
-                        <span className="text-sm font-medium">{group.label}</span>
+                        <span className="text-sm">{group.label}</span>
                       </div>
 
                       {/* Group Items */}
@@ -300,16 +300,20 @@ export function ClassificationTree({ models, fragments, isModelLoaded }: Classif
                           {group.items.map((item, itemIndex) => (
                             <div
                               key={item.name}
-                              className={`flex items-center justify-between py-1 rounded px-2 min-h-[28px] ${
-                                isDarkTheme ? "hover:bg-gray-800/30" : "hover:bg-gray-100/30"
+                              className={`flex items-center justify-between py-2 rounded px-3 min-h-[32px] ${
+                                isDarkTheme
+                                  ? "hover:bg-gray-700/30 text-gray-200"
+                                  : "hover:bg-gray-100/30 text-gray-800"
                               }`}
                             >
-                              <div className="flex items-center space-x-2 flex-1 min-w-0">
+                              <div className="flex items-center space-x-3 flex-1 min-w-0">
                                 <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-                                  <div className={`w-px h-3 ${isDarkTheme ? "bg-gray-600" : "bg-gray-300"}`} />
+                                  <div className={`w-px h-3 ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`} />
                                 </div>
                                 <span
-                                  className={`text-sm font-mono truncate ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}
+                                  className={`text-sm font-mono truncate ${
+                                    isDarkTheme ? "text-gray-200" : "text-gray-700"
+                                  }}`}
                                 >
                                   {item.name}
                                 </span>

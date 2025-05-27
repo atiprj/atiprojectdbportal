@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Upload, Loader2, RefreshCw, Info, Grid3X3, Sun, Moon } from "lucide-react"
+import { Upload, Loader2, RefreshCw, Info, Grid3X3, Sun, Moon, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useTheme } from "next-themes"
 import Image from "next/image"
@@ -712,10 +712,24 @@ export function IfcViewerComponent() {
 
       {/* Barra superiore con logo e controlli */}
       <div
-        className={`absolute top-0 left-0 right-0 h-16 ${isDarkTheme ? "bg-gray-900/90" : "bg-white/90"} backdrop-blur-sm border-b ${isDarkTheme ? "border-gray-700" : "border-gray-200"} z-50 flex items-center justify-between px-4`}
+        className={`absolute top-0 left-0 right-0 h-16 ${
+          isDarkTheme ? "bg-gray-900/95 border-gray-700" : "bg-white/95 border-gray-200"
+        } backdrop-blur-md border-b shadow-sm z-50 flex items-center justify-between px-4`}
       >
         {/* Logo e controlli a sinistra */}
         <div className="flex items-center gap-4">
+          {/* Pulsante Torna Indietro */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.history.back()}
+            title="Torna indietro"
+            className={`${isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""} flex items-center gap-2`}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Indietro</span>
+          </Button>
+
           <div className={`${isDarkTheme ? "bg-gray-800" : "bg-white"} p-2 rounded-md shadow-sm`}>
             <Image src="/images/logo.png" alt="BIM Project Logo" width={40} height={40} className="h-auto" />
           </div>
@@ -786,7 +800,7 @@ export function IfcViewerComponent() {
             title="Proprietà Elemento"
             icon={<Info className="h-4 w-4" />}
             defaultOpen={true}
-            className={`w-full h-full ${isDarkTheme ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"}`}
+            className={`w-full h-full shadow-lg`}
           >
             <div className="h-full overflow-auto">
               {/* Informazioni sul modello */}
@@ -929,8 +943,11 @@ export function IfcViewerComponent() {
       {/* Informazioni progetto */}
       {models.size > 0 && (
         <div
-          className={`absolute bottom-4 left-4 ${isDarkTheme ? "bg-gray-800/90" : "bg-white/90"} backdrop-blur-sm p-2 rounded-md text-xs ${isDarkTheme ? "border-gray-700" : "border-gray-200"} border z-30`}
+          className={`absolute bottom-4 left-4 ${
+            isDarkTheme ? "bg-gray-900/95 border-gray-700" : "bg-white/95 border-gray-200"
+          } backdrop-blur-md p-3 rounded-lg text-xs border shadow-lg z-30`}
         >
+          <p className="font-medium mb-1">Statistiche Modelli</p>
           <p>
             Modelli caricati: {models.size}/{configuredModels.length}
           </p>
@@ -941,10 +958,13 @@ export function IfcViewerComponent() {
 
       {/* Istruzioni */}
       <div
-        className={`absolute bottom-4 right-4 ${isDarkTheme ? "bg-gray-800/90" : "bg-white/90"} backdrop-blur-sm p-2 rounded-md text-xs ${isDarkTheme ? "border-gray-700" : "border-gray-200"} border z-30`}
+        className={`absolute bottom-4 right-4 ${
+          isDarkTheme ? "bg-gray-900/95 border-gray-700" : "bg-white/95 border-gray-200"
+        } backdrop-blur-md p-3 rounded-lg text-xs border shadow-lg z-30 max-w-xs`}
       >
-        <p>Clicca su un elemento per selezionarlo e visualizzarne le proprietà</p>
-        <p>Usa i pannelli laterali per gestire modelli e strumenti</p>
+        <p className="font-medium mb-1">Istruzioni</p>
+        <p className="mb-1">• Clicca su un elemento per selezionarlo</p>
+        <p>• Usa i pannelli laterali per gestire modelli e strumenti</p>
       </div>
     </div>
   )

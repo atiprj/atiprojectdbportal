@@ -26,7 +26,16 @@ export function CollapsiblePanel({
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
-    <div className={cn("border rounded-lg bg-card text-card-foreground shadow-sm", className)}>
+    <div
+      className={cn(
+        "border rounded-lg shadow-lg backdrop-blur-md",
+        // Sfondo più opaco per migliore leggibilità
+        "bg-white/95 dark:bg-gray-900/95 text-card-foreground",
+        // Bordi più definiti
+        "border-gray-200/80 dark:border-gray-700/80",
+        className,
+      )}
+    >
       <div
         className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50 transition-colors"
         onClick={() => setIsOpen(!isOpen)}

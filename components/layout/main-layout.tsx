@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { Building2, LogOut, SearchIcon, Menu } from "lucide-react"
+import { Building2, LogOut, SearchIcon, Menu, ChevronDown } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import {
@@ -61,19 +61,25 @@ export function MainLayout({ children, className }: MainLayoutProps) {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Menu a tendina */}
           <nav className="hidden lg:flex items-center justify-center flex-1 px-4">
-            <div className="flex items-center gap-4 xl:gap-6 overflow-x-auto no-scrollbar">
-              {navigation.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm font-medium whitespace-nowrap hover:text-primary"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <span>Menu</span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-56">
+                {navigation.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link href={item.href} className="w-full">
+                      {item.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
 
           {/* Mobile Menu Button */}
