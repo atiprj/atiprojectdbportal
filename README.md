@@ -2,6 +2,23 @@
 
 Questo è un template di base per creare rapidamente siti web per la visualizzazione e condivisione di progetti BIM. Il template è progettato per essere facilmente duplicabile e personalizzabile per ogni nuovo progetto.
 
+## 🚀 Caratteristiche Principali
+
+### 📊 Dashboard e Visualizzazioni
+- **Modelli 3D**: Integrazione con Speckle, BIMPlus e altri viewer
+- **Dashboard**: Supporto per PowerBI, Tableau e altre piattaforme
+- **Documenti**: Gestione centralizzata di documenti di progetto
+- **Notebook ML**: Integrazione con NotebookLM per analisi AI
+
+### 🏗️ IFC Viewer Avanzato
+- **Visualizzatore nativo**: Supporto completo per file IFC e Fragment
+- **Gestione multimodello**: Carica e gestisci più modelli contemporaneamente
+- **Strumenti di sezione**: Sezioni interattive su assi X, Y, Z con controlli precisi
+- **Selezione elementi**: Click per visualizzare proprietà dettagliate
+- **Classificazione BIM**: Albero di classificazione per categorie di elementi
+- **Gestione visibilità**: Controllo granulare della visibilità per categoria
+- **Dark/Light mode**: Interfaccia adattiva con supporto temi
+
 ## Come utilizzare questo template
 
 1. **Duplica il repository** per creare un nuovo progetto
@@ -36,6 +53,33 @@ public/
 │       ├── laura-bianchi.jpg
 │       └── giovanni-verdi.jpg
 ├── favicon.ico                     # Favicon del sito
+└── models/                         # File IFC/Fragment del progetto
+    ├── architectural-model.ifc
+    ├── structural-model.frag
+    └── mep-model.ifc
+\`\`\`
+
+### Struttura del Progetto
+
+\`\`\`
+├── app/
+│   ├── ifc-viewer/          # Visualizzatore IFC dedicato
+│   ├── models/              # Modelli 3D esterni (Speckle, etc.)
+│   ├── dashboards/          # Dashboard analitiche
+│   ├── documents/           # Documenti di progetto
+│   ├── notebooks/           # Notebook ML
+│   └── ...
+├── components/
+│   ├── ifc/                 # Componenti IFC viewer
+│   │   ├── ifc-viewer.tsx   # Componente principale
+│   │   ├── section-gizmo.tsx # Strumenti di sezione
+│   │   ├── model-manager.tsx # Gestione modelli
+│   │   └── ...
+│   └── ...
+├── config/
+│   └── project-config.ts    # Configurazione centralizzata
+└── public/
+    └── models/              # File IFC/Fragment del progetto
 \`\`\`
 
 ### Guida alla configurazione per sezione
@@ -85,6 +129,7 @@ navigation: [
   { name: "Documenti", href: "/documents" },
   { name: "Galleria", href: "/gallery" },
   { name: "Team", href: "/team" },
+  { name: "IFC Viewer", href: "/ifc-viewer" }, // Visualizzatore IFC dedicato
   // Aggiungi altre pagine personalizzate qui
 ],
 \`\`\`
@@ -187,6 +232,26 @@ team: [
   },
   // Aggiungi altri membri del team qui
 ],
+\`\`\`
+
+#### 9. Configurazione IFC Viewer
+
+\`\`\`typescript
+ifcModels: [
+  {
+    id: "ifc-model-1",
+    name: "Modello Architettonico",
+    description: "Modello 3D completo dell'edificio",
+    url: "/models/architectural-model.ifc",
+    type: "ifc",
+    category: "Architettura",
+    visible: true, // Caricato automaticamente
+    author: "Studio Tecnico",
+    version: "1.2",
+    tags: ["architettura", "3D", "BIM"]
+  },
+  // ... altri modelli
+]
 \`\`\`
 
 ### Consigli per la formattazione dei testi

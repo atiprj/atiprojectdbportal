@@ -5,7 +5,7 @@
 export const projectConfig = {
   // Informazioni generali del progetto
   general: {
-    name: "FTE NEW Turin Hospital (TO)",
+    name: "NEW Turin Hospital (TO)",
     description:
       "Il progetto riguarda la redazione del Progetto di Fattibilità Tecnica ed Economica (PFTE) per la realizzazione del nuovo Ospedale dell’ASL Città di Torino, localizzato nell’area urbana di Torino (NUTS ITC11). L’obiettivo è concepire una struttura sanitaria moderna, flessibile e sostenibile.",
     client: "ASL Città di Torino",
@@ -39,6 +39,7 @@ export const projectConfig = {
   navigation: [
     { name: "Home", href: "/" },
     { name: "Modelli 3D", href: "/models" },
+    { name: "IFC Viewer", href: "/ifc-viewer" }, // Aggiungi questa riga
     { name: "Dashboard", href: "/dashboards" },
     { name: "Documenti", href: "/documents" },
     { name: "Notebook", href: "/notebooks" },
@@ -86,6 +87,53 @@ export const projectConfig = {
 
   // Risorse esterne
   externalLinks: {
+    // Modelli IFC/Fragment configurati
+    ifcModels: [
+      {
+        id: "ifc-model-1",
+        name: "Modello Architettonico",
+        description: "Modello 3D completo dell'edificio con tutti gli elementi architettonici",
+        url: "/models/architectural-model.ifc", // Percorso relativo alla cartella public
+        type: "ifc", // "ifc" o "frag"
+        category: "Architettura",
+        visible: true, // Visibile di default
+        tags: ["architettura", "3D", "BIM"],
+        createdAt: "2023-10-15",
+        updatedAt: "2023-11-20",
+        author: "Studio Tecnico",
+        version: "1.2",
+      },
+      {
+        id: "ifc-model-2",
+        name: "Modello Strutturale",
+        description: "Struttura portante dell'edificio con fondazioni, pilastri, travi e solai",
+        url: "/models/structural-model.frag", // File Fragment pre-processato
+        type: "frag",
+        category: "Strutture",
+        visible: true,
+        tags: ["strutture", "3D", "BIM"],
+        createdAt: "2023-10-20",
+        updatedAt: "2023-11-25",
+        author: "Ingegnere Strutturale",
+        version: "2.1",
+      },
+      {
+        id: "ifc-model-3",
+        name: "Modello Impianti MEP",
+        description: "Impianti meccanici, elettrici e idraulici dell'edificio",
+        url: "/models/mep-model.ifc",
+        type: "ifc",
+        category: "Impianti",
+        visible: false, // Nascosto di default
+        tags: ["MEP", "impianti", "3D"],
+        createdAt: "2023-11-01",
+        updatedAt: "2023-11-30",
+        author: "Progettista Impianti",
+        version: "1.0",
+      },
+      // Aggiungi altri modelli IFC qui
+    ],
+    
     // Modelli 3D (Speckle, BIMPlus, ecc.)
     models: [
       {
