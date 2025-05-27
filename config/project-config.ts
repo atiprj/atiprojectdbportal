@@ -418,6 +418,7 @@ export const generalConfig = projectConfig.general
 export const brandingConfig = projectConfig.branding
 export const navigationConfig = projectConfig.navigation
 export const galleryConfig = projectConfig.gallery
+export const ifcModelsConfig = projectConfig.externalLinks.ifcModels
 export const modelsConfig = projectConfig.externalLinks.models
 export const dashboardsConfig = projectConfig.externalLinks.dashboards
 export const documentsConfig = projectConfig.externalLinks.documents
