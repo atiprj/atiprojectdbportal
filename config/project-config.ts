@@ -93,8 +93,8 @@ export const projectConfig = {
         id: "ifc-model-1",
         name: "Modello Architettonico",
         description: "Modello 3D completo dell'edificio con tutti gli elementi architettonici",
-        url: "/models/architectural-model.ifc", // Percorso relativo alla cartella public
-        type: "ifc", // "ifc" o "frag"
+        url: "/models/school_arq.frag", // Percorso relativo alla cartella public
+        type: "frag", // "ifc" o "frag"
         category: "Architettura",
         visible: true, // Visibile di default
         tags: ["architettura", "3D", "BIM"],
@@ -107,8 +107,8 @@ export const projectConfig = {
         id: "ifc-model-2",
         name: "Modello Strutturale",
         description: "Struttura portante dell'edificio con fondazioni, pilastri, travi e solai",
-        url: "/models/structural-model.frag", // File Fragment pre-processato
-        type: "frag",
+        url: "/models/school_str.ifc", // File Fragment pre-processato
+        type: "ifc",
         category: "Strutture",
         visible: true,
         tags: ["strutture", "3D", "BIM"],
@@ -117,23 +117,23 @@ export const projectConfig = {
         author: "Ingegnere Strutturale",
         version: "2.1",
       },
-      {
-        id: "ifc-model-3",
-        name: "Modello Impianti MEP",
-        description: "Impianti meccanici, elettrici e idraulici dell'edificio",
-        url: "/models/mep-model.ifc",
-        type: "ifc",
-        category: "Impianti",
-        visible: false, // Nascosto di default
-        tags: ["MEP", "impianti", "3D"],
-        createdAt: "2023-11-01",
-        updatedAt: "2023-11-30",
-        author: "Progettista Impianti",
-        version: "1.0",
-      },
+      // {
+      //   id: "ifc-model-3",
+      //   name: "Modello Impianti MEP",
+      //   description: "Impianti meccanici, elettrici e idraulici dell'edificio",
+      //   url: "/models/mep-model.ifc",
+      //   type: "ifc",
+      //   category: "Impianti",
+      //   visible: false, // Nascosto di default
+      //   tags: ["MEP", "impianti", "3D"],
+      //   createdAt: "2023-11-01",
+      //   updatedAt: "2023-11-30",
+      //   author: "Progettista Impianti",
+      //   version: "1.0",
+      // },
       // Aggiungi altri modelli IFC qui
     ],
-    
+
     // Modelli 3D (Speckle, BIMPlus, ecc.)
     models: [
       {
