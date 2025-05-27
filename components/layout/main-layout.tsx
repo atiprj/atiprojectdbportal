@@ -49,7 +49,7 @@ export function MainLayout({ children, className }: MainLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header principale */}
-      <header className="border-b border-gray-200/20 bg-white/95 backdrop-blur-sm relative">
+      <header className="border-b border-gray-200/20 bg-white/95 backdrop-blur-sm relative z-50">
         <div className="max-w-7xl mx-auto w-full flex h-16 items-center justify-between py-4 px-4 md:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
@@ -115,7 +115,7 @@ export function MainLayout({ children, className }: MainLayoutProps) {
               </DropdownMenu>
             )}
 
-            {/* Menu Navigation - Usando DropdownMenu di shadcn/ui */}
+            {/* Menu Navigation - Con sfondo opaco migliorato */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9">
@@ -123,19 +123,24 @@ export function MainLayout({ children, className }: MainLayoutProps) {
                   <span className="sr-only">Menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
+              <DropdownMenuContent
+                className="w-56 bg-white/98 backdrop-blur-md border border-gray-200 shadow-xl"
+                align="end"
+                forceMount
+                sideOffset={5}
+              >
+                <DropdownMenuLabel className="font-normal bg-gray-50/80">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">Navigazione</p>
-                    <p className="text-xs leading-none text-muted-foreground">Sezioni del progetto</p>
+                    <p className="text-sm font-medium leading-none text-gray-900">Navigazione</p>
+                    <p className="text-xs leading-none text-gray-600">Sezioni del progetto</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
                 {navigation.map((item) => (
-                  <DropdownMenuItem key={item.href} asChild>
+                  <DropdownMenuItem key={item.href} asChild className="bg-white/90 hover:bg-gray-50/90">
                     <Link href={item.href} className="w-full cursor-pointer">
-                      <span className="uppercase tracking-wider text-sm font-normal">{item.name}</span>
+                      <span className="uppercase tracking-wider text-sm font-normal text-gray-800">{item.name}</span>
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -143,7 +148,10 @@ export function MainLayout({ children, className }: MainLayoutProps) {
                 {user && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout} className="text-red-600 focus:text-red-600">
+                    <DropdownMenuItem
+                      onClick={logout}
+                      className="text-red-600 focus:text-red-600 bg-white/90 hover:bg-red-50/90"
+                    >
                       <LogOut className="mr-2 h-4 w-4" />
                       <span className="uppercase tracking-wider text-sm font-normal">Logout</span>
                     </DropdownMenuItem>

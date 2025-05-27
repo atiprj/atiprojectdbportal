@@ -2,10 +2,19 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Upload, Loader2, RefreshCw, Info, Grid3X3, Sun, Moon, ArrowLeft } from "lucide-react"
+import { Upload, Loader2, RefreshCw, Info, Grid3X3, Sun, Moon, Menu, LogOut } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useTheme } from "next-themes"
+import { useAuth } from "@/hooks/use-auth"
 import Image from "next/image"
+import Link from "next/link"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 // Importiamo le librerie necessarie
 import * as OBC from "@thatopen/components"
@@ -16,9 +25,11 @@ import { SectionGizmo } from "./section-gizmo"
 import { CollapsiblePanel } from "./ui/collapsible-panel"
 import { ClassificationTree } from "./classification-tree"
 import { ModelManager } from "./model-manager"
+import { ThemeWrapper } from "./theme-wrapper"
 
 // Importiamo la configurazione
 import { ifcModelsConfig } from "@/config/project-config"
+import { getNavigation } from "@/utils/config-utils"
 
 // Importiamo il ModelStore
 import { modelStore } from "@/lib/model-store"
@@ -62,8 +73,13 @@ export function IfcViewerComponent() {
   const [elementProperties, setElementProperties] = useState<PropertySet[]>([])
   const [gridVisible, setGridVisible] = useState(true)
   const [mounted, setMounted] = useState(false)
+  const [navigation, setNavigation] = useState<any[]>([])
+
+  // Tema locale solo per l'IFC viewer - NON usa next-themes
+  const [isDarkTheme, setIsDarkTheme] = useState(false)
+
   const { toast } = useToast()
-  const { theme, setTheme, resolvedTheme } = useTheme()
+  const { user, logout } = useAuth()
   const selectedElementRef = useRef<number | null>(null)
   const selectedModelRef = useRef<string | null>(null)
   const clickListenerRef = useRef<((event: MouseEvent) => void) | null>(null)
@@ -78,6 +94,11 @@ export function IfcViewerComponent() {
   // Evita hydration mismatch
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  // Carica le configurazioni di navigazione
+  useEffect(() => {
+    setNavigation(getNavigation())
   }, [])
 
   // Carica i modelli configurati
@@ -117,9 +138,8 @@ export function IfcViewerComponent() {
     newWorld.scene = new OBC.SimpleScene(newComponents)
     newWorld.scene.setup()
 
-    // Impostiamo lo sfondo in base al tema
-    const isDark = resolvedTheme === "dark"
-    newWorld.scene.three.background = isDark ? new THREE.Color(0x1a1a1a) : new THREE.Color(0xf5f5f5)
+    // Impostiamo lo sfondo in base al tema locale
+    newWorld.scene.three.background = isDarkTheme ? new THREE.Color(0x1e1e1e) : new THREE.Color(0xf8fafc)
 
     // Configuriamo il renderer
     newWorld.renderer = new OBC.SimpleRenderer(newComponents, containerRef.current)
@@ -191,30 +211,22 @@ export function IfcViewerComponent() {
 
       modelStore.reset()
     }
-  }, [toast, mounted])
+  }, [toast, mounted, isDarkTheme]) // Aggiungiamo isDarkTheme come dipendenza
 
-  // NON caricare automaticamente i modelli - lascia che l'utente scelga
-  // useEffect(() => {
-  //   if (fragments && world && configuredModels.length > 0 && models.size === 0) {
-  //     loadConfiguredModels()
-  //   }
-  // }, [fragments, world, configuredModels])
-
-  // Aggiorna lo sfondo quando cambia il tema
+  // Aggiorna lo sfondo quando cambia il tema locale
   useEffect(() => {
     if (!mounted) return
 
     const currentWorld = worldRef.current || world
     if (currentWorld && currentWorld.scene && currentWorld.scene.three) {
-      const isDark = resolvedTheme === "dark"
-      currentWorld.scene.three.background = isDark ? new THREE.Color(0x1a1a1a) : new THREE.Color(0xf5f5f5)
+      currentWorld.scene.three.background = isDarkTheme ? new THREE.Color(0x1e1e1e) : new THREE.Color(0xf8fafc)
 
       // Forza il rendering per aggiornare immediatamente lo sfondo
       if (currentWorld.renderer && currentWorld.renderer.three) {
         currentWorld.renderer.three.render(currentWorld.scene.three, currentWorld.camera.three)
       }
     }
-  }, [resolvedTheme, world, mounted])
+  }, [isDarkTheme, world, mounted])
 
   // Carica tutti i modelli configurati
   const loadConfiguredModels = async () => {
@@ -693,64 +705,58 @@ export function IfcViewerComponent() {
     }
   }
 
-  // Funzione per cambiare il tema
+  // Funzione per cambiare il tema (solo locale per l'IFC viewer)
   const toggleTheme = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark")
+    setIsDarkTheme(!isDarkTheme)
   }
-
-  const currentTheme = resolvedTheme || "light"
-  const isDarkTheme = currentTheme === "dark"
 
   if (!mounted) {
     return null
   }
 
   return (
-    <div className="relative w-full h-full">
+    // Applichiamo le classi CSS direttamente in base al tema locale
+    <div className={`relative w-full h-full ${isDarkTheme ? "dark" : ""}`}>
       {/* Container del visualizzatore */}
       <div ref={containerRef} className="w-full h-full" />
 
       {/* Barra superiore con logo e controlli */}
       <div
         className={`absolute top-0 left-0 right-0 h-16 ${
-          isDarkTheme ? "bg-gray-900/95 border-gray-700" : "bg-white/95 border-gray-200"
+          isDarkTheme ? "bg-slate-800/95 border-slate-600/50" : "bg-white/95 border-gray-200"
         } backdrop-blur-md border-b shadow-sm z-50 flex items-center justify-between px-4`}
       >
         {/* Logo e controlli a sinistra */}
         <div className="flex items-center gap-4">
-          {/* Pulsante Torna Indietro */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => window.history.back()}
-            title="Torna indietro"
-            className={`${isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""} flex items-center gap-2`}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Indietro</span>
-          </Button>
-
-          <div className={`${isDarkTheme ? "bg-gray-800" : "bg-white"} p-2 rounded-md shadow-sm`}>
-            <Image src="/images/logo.png" alt="BIM Project Logo" width={40} height={40} className="h-auto" />
+          <div className={`${isDarkTheme ? "bg-slate-700/50" : "bg-white"} p-2 rounded-md shadow-sm`}>
+            <Image src="/images/ATI.png" alt="BIM Project Logo" width={40} height={40} className="h-auto" />
           </div>
 
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={toggleGrid}
               title={gridVisible ? "Nascondi griglia" : "Mostra griglia"}
-              className={isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""}
+              className={
+                isDarkTheme
+                  ? "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              }
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
 
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={toggleTheme}
               title={isDarkTheme ? "Tema chiaro" : "Tema scuro"}
-              className={isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""}
+              className={
+                isDarkTheme
+                  ? "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              }
             >
               {isDarkTheme ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
@@ -761,22 +767,26 @@ export function IfcViewerComponent() {
         <div className="flex items-center gap-2">
           {models.size > 0 && (
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={clearAllModels}
               disabled={loading}
-              className={`${isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""} text-red-600 hover:text-red-700`}
+              className={`${
+                isDarkTheme
+                  ? "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                  : "text-red-600 hover:text-red-700 hover:bg-red-50"
+              }`}
             >
               Rimuovi Tutti
             </Button>
           )}
 
           <Button
-            variant="outline"
+            variant={isDarkTheme ? "secondary" : "default"}
             size="sm"
             onClick={loadConfiguredModels}
             disabled={loading}
-            className={isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""}
+            className={isDarkTheme ? "bg-slate-700 text-slate-200 hover:bg-slate-600 border-slate-600" : ""}
           >
             {loading ? (
               <>
@@ -790,60 +800,155 @@ export function IfcViewerComponent() {
               </>
             )}
           </Button>
+
+          {/* Menu Navigation */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={
+                  isDarkTheme
+                    ? "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                }
+              >
+                <Menu className="h-4 w-4" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className={`w-56 ${
+                isDarkTheme
+                  ? "bg-slate-800/98 backdrop-blur-md border-slate-700 shadow-xl"
+                  : "bg-white/98 backdrop-blur-md border-gray-200 shadow-xl"
+              }`}
+              align="end"
+              forceMount
+              sideOffset={5}
+            >
+              <DropdownMenuLabel className={`font-normal ${isDarkTheme ? "bg-slate-700/50" : "bg-gray-50/80"}`}>
+                <div className="flex flex-col space-y-1">
+                  <p className={`text-sm font-medium leading-none ${isDarkTheme ? "text-slate-200" : "text-gray-900"}`}>
+                    Navigazione
+                  </p>
+                  <p className={`text-xs leading-none ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}>
+                    Sezioni del progetto
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className={isDarkTheme ? "border-slate-700" : ""} />
+
+              {navigation.map((item) => (
+                <DropdownMenuItem
+                  key={item.href}
+                  asChild
+                  className={`${
+                    isDarkTheme
+                      ? "bg-slate-800/90 hover:bg-slate-700/90 text-slate-200"
+                      : "bg-white/90 hover:bg-gray-50/90"
+                  }`}
+                >
+                  <Link href={item.href} className="w-full cursor-pointer">
+                    <span
+                      className={`uppercase tracking-wider text-sm font-normal ${
+                        isDarkTheme ? "text-slate-300" : "text-gray-800"
+                      }`}
+                    >
+                      {item.name}
+                    </span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+
+              {user && (
+                <>
+                  <DropdownMenuSeparator className={isDarkTheme ? "border-slate-700" : ""} />
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className={`${
+                      isDarkTheme
+                        ? "text-red-400 focus:text-red-300 bg-slate-800/90 hover:bg-red-900/20"
+                        : "text-red-600 focus:text-red-600 bg-white/90 hover:bg-red-50/90"
+                    }`}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span className="uppercase tracking-wider text-sm font-normal">Logout</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
       {/* Pannello sinistro - Proprietà elemento */}
       {selectedElement !== null && (
         <div className="absolute top-16 left-4 bottom-4 w-80 z-40">
-          <CollapsiblePanel
-            title="Proprietà Elemento"
-            icon={<Info className="h-4 w-4" />}
-            defaultOpen={true}
-            className={`w-full h-full shadow-lg`}
-          >
-            <div className="h-full overflow-auto">
-              {/* Informazioni sul modello */}
-              {getSelectedModel() && (
-                <div className="mb-4 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
-                  <h3 className="text-sm font-medium mb-1 text-blue-800 dark:text-blue-200">Modello</h3>
-                  <p className={`text-sm ${isDarkTheme ? "text-blue-300" : "text-blue-600"}`}>
-                    {models.get(getSelectedModel())?.name || "Sconosciuto"}
-                  </p>
-                  <p className={`text-xs ${isDarkTheme ? "text-blue-400" : "text-blue-500"}`}>
-                    {models.get(getSelectedModel())?.category} - v{models.get(getSelectedModel())?.version}
+          <ThemeWrapper isDark={isDarkTheme} className="w-full h-full shadow-lg">
+            <CollapsiblePanel
+              title="Proprietà Elemento"
+              icon={<Info className="h-4 w-4" />}
+              defaultOpen={true}
+              className="w-full h-full"
+            >
+              <div className="h-full overflow-auto">
+                {/* Informazioni sul modello */}
+                {getSelectedModel() && (
+                  <div
+                    className={`mb-4 p-3 rounded-md border ${
+                      isDarkTheme ? "bg-blue-900/20 border-blue-800/50" : "bg-blue-50 border-blue-200"
+                    }`}
+                  >
+                    <h3 className={`text-sm font-medium mb-1 ${isDarkTheme ? "text-blue-300" : "text-blue-800"}`}>
+                      Modello
+                    </h3>
+                    <p className={`text-sm ${isDarkTheme ? "text-blue-200" : "text-blue-600"}`}>
+                      {models.get(getSelectedModel())?.name || "Sconosciuto"}
+                    </p>
+                    <p className={`text-xs ${isDarkTheme ? "text-blue-400" : "text-blue-500"}`}>
+                      {models.get(getSelectedModel())?.category} - v{models.get(getSelectedModel())?.version}
+                    </p>
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <h3 className={`text-sm font-medium mb-1 ${isDarkTheme ? "text-slate-200" : "text-gray-900"}`}>
+                    Nome Elemento
+                  </h3>
+                  <p className={`text-sm ${isDarkTheme ? "text-slate-300" : "text-gray-600"}`}>
+                    {elementName || "Sconosciuto"}
                   </p>
                 </div>
-              )}
 
-              <div className="mb-4">
-                <h3 className="text-sm font-medium mb-1">Nome Elemento</h3>
-                <p className={`text-sm ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
-                  {elementName || "Sconosciuto"}
-                </p>
-              </div>
-
-              {elementProperties.length > 0 ? (
-                elementProperties.map((pset, index) => (
-                  <div key={index} className="mb-4">
-                    <h3 className="text-sm font-medium mb-1">{pset.name}</h3>
-                    <div className="space-y-1">
-                      {pset.properties.map((prop, propIndex) => (
-                        <div key={propIndex} className="text-xs">
-                          <span className="font-medium">{prop.name}:</span>{" "}
-                          <span className={isDarkTheme ? "text-gray-400" : "text-gray-600"}>{String(prop.value)}</span>
-                        </div>
-                      ))}
+                {elementProperties.length > 0 ? (
+                  elementProperties.map((pset, index) => (
+                    <div key={index} className="mb-4">
+                      <h3 className={`text-sm font-medium mb-1 ${isDarkTheme ? "text-slate-200" : "text-gray-900"}`}>
+                        {pset.name}
+                      </h3>
+                      <div className="space-y-1">
+                        {pset.properties.map((prop, propIndex) => (
+                          <div key={propIndex} className="text-xs">
+                            <span className={`font-medium ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}>
+                              {prop.name}:
+                            </span>{" "}
+                            <span className={isDarkTheme ? "text-slate-400" : "text-gray-600"}>
+                              {String(prop.value)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-500"}`}>
-                  Nessuna proprietà disponibile
-                </p>
-              )}
-            </div>
-          </CollapsiblePanel>
+                  ))
+                ) : (
+                  <p className={`text-sm ${isDarkTheme ? "text-slate-400" : "text-gray-500"}`}>
+                    Nessuna proprietà disponibile
+                  </p>
+                )}
+              </div>
+            </CollapsiblePanel>
+          </ThemeWrapper>
         </div>
       )}
 
@@ -851,75 +956,103 @@ export function IfcViewerComponent() {
       <div className="absolute top-16 right-4 bottom-4 w-80 z-40 flex flex-col gap-4 overflow-auto">
         {/* Pannello modelli configurati disponibili */}
         {configuredModels.length > 0 && (
-          <CollapsiblePanel
-            title="Modelli Configurati"
-            icon={<Upload className="h-4 w-4" />}
-            defaultOpen={true}
-            className="w-full"
-          >
-            <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {configuredModels.map((configModel) => {
-                const isLoaded = models.has(configModel.id)
-                const isLoading = loadingStates.get(configModel.id) || false
+          <ThemeWrapper isDark={isDarkTheme}>
+            <CollapsiblePanel
+              title="Modelli Configurati"
+              icon={<Upload className="h-4 w-4" />}
+              defaultOpen={true}
+              className="w-full"
+            >
+              <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                {configuredModels.map((configModel) => {
+                  const isLoaded = models.has(configModel.id)
+                  const isLoading = loadingStates.get(configModel.id) || false
 
-                return (
-                  <div
-                    key={configModel.id}
-                    className={`p-3 rounded-md border ${isDarkTheme ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-200"}`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-medium truncate">{configModel.name}</h4>
-                      <div className="flex items-center gap-1">
-                        <span
-                          className={`text-xs px-2 py-1 rounded ${
-                            configModel.type === "ifc" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"
+                  return (
+                    <div
+                      key={configModel.id}
+                      className={`p-3 rounded-lg border ${
+                        isDarkTheme ? "bg-slate-800/50 border-slate-700/50" : "bg-gray-50 border-gray-200"
+                      } transition-colors`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4
+                          className={`text-sm font-medium truncate ${isDarkTheme ? "text-slate-200" : "text-gray-900"}`}
+                        >
+                          {configModel.name}
+                        </h4>
+                        <div className="flex items-center gap-1">
+                          <span
+                            className={`text-xs px-2 py-1 rounded-md font-medium ${
+                              configModel.type === "ifc"
+                                ? isDarkTheme
+                                  ? "bg-blue-900/50 text-blue-300 border border-blue-800/50"
+                                  : "bg-blue-100 text-blue-800 border border-blue-200"
+                                : isDarkTheme
+                                  ? "bg-green-900/50 text-green-300 border border-green-800/50"
+                                  : "bg-green-100 text-green-800 border border-green-200"
+                            }`}
+                          >
+                            {configModel.type.toUpperCase()}
+                          </span>
+                          {isLoaded && (
+                            <span
+                              className={`text-xs px-2 py-1 rounded-md font-medium ${
+                                isDarkTheme
+                                  ? "bg-emerald-900/50 text-emerald-300 border border-emerald-800/50"
+                                  : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                              }`}
+                            >
+                              Caricato
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p className={`text-xs mb-3 ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}>
+                        {configModel.description}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xs ${isDarkTheme ? "text-slate-500" : "text-gray-500"}`}>
+                          {configModel.category} - v{configModel.version}
+                        </span>
+                        <Button
+                          variant={isDarkTheme ? "secondary" : "outline"}
+                          size="sm"
+                          onClick={() => loadSpecificModel(configModel)}
+                          disabled={isLoaded || isLoading}
+                          className={`text-xs ${
+                            isDarkTheme ? "bg-slate-700 text-slate-200 hover:bg-slate-600 border-slate-600" : ""
                           }`}
                         >
-                          {configModel.type.toUpperCase()}
-                        </span>
-                        {isLoaded && (
-                          <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">Caricato</span>
-                        )}
+                          {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : isLoaded ? "Caricato" : "Carica"}
+                        </Button>
                       </div>
                     </div>
-                    <p className={`text-xs mb-2 ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
-                      {configModel.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className={`text-xs ${isDarkTheme ? "text-gray-500" : "text-gray-500"}`}>
-                        {configModel.category} - v{configModel.version}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => loadSpecificModel(configModel)}
-                        disabled={isLoaded || isLoading}
-                        className="text-xs"
-                      >
-                        {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : isLoaded ? "Caricato" : "Carica"}
-                      </Button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </CollapsiblePanel>
+                  )
+                })}
+              </div>
+            </CollapsiblePanel>
+          </ThemeWrapper>
         )}
 
         {/* Pannello di gestione modelli caricati */}
         {models.size > 0 && (
-          <ModelManager
-            models={models}
-            onToggleVisibility={toggleModelVisibility}
-            onRemoveModel={removeModel}
-            onDownloadModel={downloadModel}
-            loading={loading}
-          />
+          <ThemeWrapper isDark={isDarkTheme}>
+            <ModelManager
+              models={models}
+              onToggleVisibility={toggleModelVisibility}
+              onRemoveModel={removeModel}
+              onDownloadModel={downloadModel}
+              loading={loading}
+            />
+          </ThemeWrapper>
         )}
 
         {/* Pannello di classificazione */}
         {modelLoaded && fragments && models.size > 0 && (
-          <ClassificationTree models={models} fragments={fragments} isModelLoaded={modelLoaded} />
+          <ThemeWrapper isDark={isDarkTheme}>
+            <ClassificationTree models={models} fragments={fragments} isModelLoaded={modelLoaded} />
+          </ThemeWrapper>
         )}
 
         {/* Pannello del gizmo di sezione */}
@@ -930,12 +1063,14 @@ export function IfcViewerComponent() {
           (() => {
             const firstVisibleModel = Array.from(models.values()).find((m) => m.visible)
             return firstVisibleModel ? (
-              <SectionGizmo
-                model={firstVisibleModel.model || firstVisibleModel}
-                fragments={fragments}
-                isModelLoaded={modelLoaded}
-                world={world}
-              />
+              <ThemeWrapper isDark={isDarkTheme}>
+                <SectionGizmo
+                  model={firstVisibleModel.model || firstVisibleModel}
+                  fragments={fragments}
+                  isModelLoaded={modelLoaded}
+                  world={world}
+                />
+              </ThemeWrapper>
             ) : null
           })()}
       </div>
@@ -944,7 +1079,7 @@ export function IfcViewerComponent() {
       {models.size > 0 && (
         <div
           className={`absolute bottom-4 left-4 ${
-            isDarkTheme ? "bg-gray-900/95 border-gray-700" : "bg-white/95 border-gray-200"
+            isDarkTheme ? "bg-slate-800/90 border-slate-700/50 text-slate-200" : "bg-white/95 border-gray-200"
           } backdrop-blur-md p-3 rounded-lg text-xs border shadow-lg z-30`}
         >
           <p className="font-medium mb-1">Statistiche Modelli</p>
@@ -959,7 +1094,7 @@ export function IfcViewerComponent() {
       {/* Istruzioni */}
       <div
         className={`absolute bottom-4 right-4 ${
-          isDarkTheme ? "bg-gray-900/95 border-gray-700" : "bg-white/95 border-gray-200"
+          isDarkTheme ? "bg-slate-800/90 border-slate-700/50 text-slate-200" : "bg-white/95 border-gray-200"
         } backdrop-blur-md p-3 rounded-lg text-xs border shadow-lg z-30 max-w-xs`}
       >
         <p className="font-medium mb-1">Istruzioni</p>

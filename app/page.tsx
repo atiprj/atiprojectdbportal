@@ -62,7 +62,7 @@ export default function HomePage() {
     },
     {
       title: "Dashboard",
-      description: "Analisi e dati del progetto",
+      description: "Analisi e dati del progetto PowerBI",
       count: dashboardsCount,
       countText: `${dashboardsCount} dashboard disponibili`,
       href: "/dashboards",
