@@ -193,12 +193,12 @@ export function IfcViewerComponent() {
     }
   }, [toast, mounted])
 
-  // Carica automaticamente i modelli configurati quando il sistema è pronto
-  useEffect(() => {
-    if (fragments && world && configuredModels.length > 0 && models.size === 0) {
-      loadConfiguredModels()
-    }
-  }, [fragments, world, configuredModels])
+  // NON caricare automaticamente i modelli - lascia che l'utente scelga
+  // useEffect(() => {
+  //   if (fragments && world && configuredModels.length > 0 && models.size === 0) {
+  //     loadConfiguredModels()
+  //   }
+  // }, [fragments, world, configuredModels])
 
   // Aggiorna lo sfondo quando cambia il tema
   useEffect(() => {
@@ -245,6 +245,8 @@ export function IfcViewerComponent() {
     if (!fragments || !world) return
 
     try {
+      console.log(`Caricamento modello: ${configModel.name}`)
+
       // Imposta lo stato di caricamento per questo modello
       const newLoadingStates = new Map(loadingStates)
       newLoadingStates.set(configModel.id, true)
@@ -300,6 +302,7 @@ export function IfcViewerComponent() {
         author: configModel.author,
         version: configModel.version,
         tags: configModel.tags,
+        object: model.object, // Salva il riferimento all'oggetto 3D
       }
 
       // Aggiorna la mappa dei modelli
@@ -323,8 +326,10 @@ export function IfcViewerComponent() {
 
       toast({
         title: "Successo",
-        description: `Modello "${configModel.name}" caricato con successo`,
+        description: `Modello "${configModel.name}" caricato con successo (${elementCount} elementi)`,
       })
+
+      console.log(`Modello ${configModel.name} caricato e aggiunto alla scena`)
     } catch (error) {
       console.error(`Error loading configured model ${configModel.id}:`, error)
       toast({
@@ -494,22 +499,29 @@ export function IfcViewerComponent() {
     }
   }
 
-  // Funzioni per gestire i modelli
+  // Funzioni per gestire i modelli - CORRETTE
   const toggleModelVisibility = async (modelId: string) => {
     const modelInfo = models.get(modelId)
     if (!modelInfo || !world) return
 
     try {
-      setLoading(true)
-      const model = modelInfo.model || modelInfo
+      console.log(`Toggling visibility for model ${modelId}, current visibility: ${modelInfo.visible}`)
+
+      const model = modelInfo.model
+      const modelObject = model.object
       const newVisibility = !modelInfo.visible
 
       if (newVisibility) {
-        // Mostra il modello
-        world.scene.three.add(model.object)
+        // Mostra il modello - aggiungilo alla scena se non c'è già
+        if (!world.scene.three.children.includes(modelObject)) {
+          world.scene.three.add(modelObject)
+          console.log(`Added model ${modelId} to scene`)
+        }
+        modelObject.visible = true
       } else {
-        // Nascondi il modello
-        world.scene.three.remove(model.object)
+        // Nascondi il modello - rendilo invisibile ma non rimuoverlo dalla scena
+        modelObject.visible = false
+        console.log(`Hidden model ${modelId}`)
       }
 
       // Aggiorna lo stato
@@ -522,10 +534,10 @@ export function IfcViewerComponent() {
       modelStore.addModel(modelId, updatedModelInfo)
 
       await fragments.update(true)
-      setLoading(false)
+
+      console.log(`Model ${modelId} visibility toggled to: ${newVisibility}`)
     } catch (error) {
       console.error("Error toggling model visibility:", error)
-      setLoading(false)
     }
   }
 
@@ -534,15 +546,21 @@ export function IfcViewerComponent() {
     if (!modelInfo || !world) return
 
     try {
-      setLoading(true)
+      console.log(`Removing model ${modelId}`)
 
-      // Rimuovi dalla scena
-      const model = modelInfo.model || modelInfo
-      world.scene.three.remove(model.object)
+      const model = modelInfo.model
+      const modelObject = model.object
+
+      // Rimuovi completamente dalla scena
+      if (world.scene.three.children.includes(modelObject)) {
+        world.scene.three.remove(modelObject)
+        console.log(`Removed model ${modelId} from scene`)
+      }
 
       // Rimuovi dal fragments manager
       try {
         await fragments.disposeModel(modelId)
+        console.log(`Disposed model ${modelId} from fragments`)
       } catch (error) {
         console.warn("Error disposing model:", error)
       }
@@ -572,6 +590,8 @@ export function IfcViewerComponent() {
         title: "Successo",
         description: `Modello "${modelInfo.name}" rimosso con successo`,
       })
+
+      console.log(`Model ${modelId} completely removed`)
     } catch (error) {
       console.error("Error removing model:", error)
       toast({
@@ -579,8 +599,6 @@ export function IfcViewerComponent() {
         description: "Impossibile rimuovere il modello",
         variant: "destructive",
       })
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -614,6 +632,53 @@ export function IfcViewerComponent() {
     }
 
     await loadConfiguredModel(configModel)
+  }
+
+  // Funzione per pulire completamente la scena
+  const clearAllModels = async () => {
+    if (!world || !fragments) return
+
+    try {
+      console.log("Clearing all models from scene")
+
+      // Rimuovi tutti i modelli dalla scena
+      for (const [modelId, modelInfo] of models) {
+        const model = modelInfo.model
+        const modelObject = model.object
+
+        if (world.scene.three.children.includes(modelObject)) {
+          world.scene.three.remove(modelObject)
+        }
+
+        try {
+          await fragments.disposeModel(modelId)
+        } catch (error) {
+          console.warn(`Error disposing model ${modelId}:`, error)
+        }
+      }
+
+      // Reset di tutti gli stati
+      setModels(new Map())
+      setModelLoaded(false)
+      setSelected(null)
+      setSelectedModel(null)
+      setElementName(null)
+      setElementProperties([])
+
+      // Reset del model store
+      modelStore.reset()
+
+      await fragments.update(true)
+
+      toast({
+        title: "Successo",
+        description: "Tutti i modelli sono stati rimossi",
+      })
+
+      console.log("All models cleared from scene")
+    } catch (error) {
+      console.error("Error clearing all models:", error)
+    }
   }
 
   // Funzione per attivare/disattivare la griglia
@@ -680,6 +745,18 @@ export function IfcViewerComponent() {
 
         {/* Controlli a destra */}
         <div className="flex items-center gap-2">
+          {models.size > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearAllModels}
+              disabled={loading}
+              className={`${isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""} text-red-600 hover:text-red-700`}
+            >
+              Rimuovi Tutti
+            </Button>
+          )}
+
           <Button
             variant="outline"
             size="sm"
@@ -695,7 +772,7 @@ export function IfcViewerComponent() {
             ) : (
               <>
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Ricarica Modelli
+                Carica Tutti
               </>
             )}
           </Button>
@@ -858,6 +935,7 @@ export function IfcViewerComponent() {
             Modelli caricati: {models.size}/{configuredModels.length}
           </p>
           <p>Elementi totali: {Array.from(models.values()).reduce((sum, model) => sum + model.elementCount, 0)}</p>
+          <p>Modelli visibili: {Array.from(models.values()).filter((m) => m.visible).length}</p>
         </div>
       )}
 
