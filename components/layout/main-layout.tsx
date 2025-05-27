@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Building2, LogOut, SearchIcon, Menu, ChevronDown } from "lucide-react"
+import { Building2, LogOut, SearchIcon, Menu } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,13 +28,13 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, className }: MainLayoutProps) {
   const { user, logout } = useAuth()
+  const router = useRouter()
   const [projectName, setProjectName] = useState<string>("")
   const [logo, setLogo] = useState<string>("")
   const [primaryColor, setPrimaryColor] = useState<string>("")
   const [navigation, setNavigation] = useState<any[]>([])
   const [clientName, setClientName] = useState<string>("")
   const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Carica le configurazioni lato client per evitare errori di idratazione
   useEffect(() => {
@@ -47,72 +48,29 @@ export function MainLayout({ children, className }: MainLayoutProps) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="border-b">
+      {/* Header principale */}
+      <header className="border-b border-gray-200/20 bg-white/95 backdrop-blur-sm relative">
         <div className="max-w-7xl mx-auto w-full flex h-16 items-center justify-between py-4 px-4 md:px-8">
-          {/* Logo e titolo del progetto */}
-          <div className="flex items-center gap-2 min-w-0 max-w-[40%] lg:max-w-xs">
-            <Link href="/" className="flex items-center gap-2 min-w-0">
-              {logo ? (
-                <img src={logo || "/placeholder.svg"} alt="" className="h-8 w-8 flex-shrink-0" />
-              ) : (
-                <Building2 className="h-6 w-6 flex-shrink-0" style={{ color: primaryColor }} />
-              )}
-              <span className="text-base md:text-lg font-bold truncate">{projectName}</span>
-            </Link>
-          </div>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3">
+            {logo ? (
+              <img src={logo || "/placeholder.svg"} alt="" className="h-8 w-8" />
+            ) : (
+              <Building2 className="h-6 w-6" style={{ color: primaryColor }} />
+            )}
+            <span className="text-lg font-light tracking-wide">{projectName}</span>
+          </Link>
 
-          {/* Desktop Navigation - Menu a tendina */}
-          <nav className="hidden lg:flex items-center justify-center flex-1 px-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
-                  <span>Menu</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-56">
-                {navigation.map((item) => (
-                  <DropdownMenuItem key={item.href} asChild>
-                    <Link href={item.href} className="w-full">
-                      {item.name}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </nav>
+          {/* Controlli destri */}
+          <div className="flex items-center gap-4">
+            {/* Search Bar Desktop */}
+            {isSearchEnabled && (
+              <div className="hidden lg:block w-[240px]">
+                <SearchBar />
+              </div>
+            )}
 
-          {/* Mobile Menu Button */}
-          <div className="lg:hidden flex items-center">
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[250px] sm:w-[300px]">
-                <SheetHeader className="mb-4">
-                  <SheetTitle>Menu</SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-4">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="text-sm font-medium hover:text-primary"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Search Button (Mobile) */}
+            {/* Search Button Mobile */}
             {isSearchEnabled && (
               <Sheet>
                 <SheetTrigger asChild className="lg:hidden">
@@ -131,19 +89,13 @@ export function MainLayout({ children, className }: MainLayoutProps) {
               </Sheet>
             )}
 
-            {/* Search Bar (Desktop) */}
-            {isSearchEnabled && (
-              <div className="hidden lg:block w-[180px] xl:w-[240px]">
-                <SearchBar />
-              </div>
-            )}
-
+            {/* User Avatar */}
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback className="text-xs">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -162,11 +114,50 @@ export function MainLayout({ children, className }: MainLayoutProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+
+            {/* Menu Navigation - Usando DropdownMenu di shadcn/ui */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">Navigazione</p>
+                    <p className="text-xs leading-none text-muted-foreground">Sezioni del progetto</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                {navigation.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link href={item.href} className="w-full cursor-pointer">
+                      <span className="uppercase tracking-wider text-sm font-normal">{item.name}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+
+                {user && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-red-600 focus:text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span className="uppercase tracking-wider text-sm font-normal">Logout</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
+
       <main className={cn("flex-1", className)}>{children}</main>
-      <footer className="border-t py-6">
+
+      <footer className="border-t py-6 bg-gray-50/50">
         <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-4 px-8 md:px-12">
           <div className="flex items-center gap-2">
             {logo ? (
@@ -174,9 +165,9 @@ export function MainLayout({ children, className }: MainLayoutProps) {
             ) : (
               <Building2 className="h-5 w-5" style={{ color: primaryColor }} />
             )}
-            <span className="font-medium">{projectName}</span>
+            <span className="font-light">{projectName}</span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground font-light">
             © {new Date().getFullYear()} {clientName}. Tutti i diritti riservati.
           </p>
         </div>
