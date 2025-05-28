@@ -121,8 +121,8 @@ export const projectConfig = {
         id: "ifc-model-3",
         name: "Modello Impianti MEP",
         description: "Impianti meccanici, elettrici e idraulici dell'edificio",
-        url: "/models/000001_FTE_00_000_ARC_PIM_000.frag",
-        type: "ifc",
+        url: "models/000001_FTE_00_000_ARC_PIM_000.frag",
+        type: "frag",
         category: "Impianti",
         visible: false, // Nascosto di default
         tags: ["MEP", "impianti", "3D"],
