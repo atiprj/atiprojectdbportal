@@ -117,20 +117,20 @@ export const projectConfig = {
         author: "Ingegnere Strutturale",
         version: "2.1",
       },
-      // {
-      //   id: "ifc-model-3",
-      //   name: "Modello Impianti MEP",
-      //   description: "Impianti meccanici, elettrici e idraulici dell'edificio",
-      //   url: "/models/mep-model.ifc",
-      //   type: "ifc",
-      //   category: "Impianti",
-      //   visible: false, // Nascosto di default
-      //   tags: ["MEP", "impianti", "3D"],
-      //   createdAt: "2023-11-01",
-      //   updatedAt: "2023-11-30",
-      //   author: "Progettista Impianti",
-      //   version: "1.0",
-      // },
+      {
+        id: "ifc-model-3",
+        name: "Modello Impianti MEP",
+        description: "Impianti meccanici, elettrici e idraulici dell'edificio",
+        url: "/models/000001_FTE_00_000_ARC_PIM_000.frag",
+        type: "ifc",
+        category: "Impianti",
+        visible: false, // Nascosto di default
+        tags: ["MEP", "impianti", "3D"],
+        createdAt: "2023-11-01",
+        updatedAt: "2023-11-30",
+        author: "Progettista Impianti",
+        version: "1.0",
+      },
       // Aggiungi altri modelli IFC qui
     ],
 
@@ -394,7 +394,7 @@ export const projectConfig = {
 
   // Autenticazione e sicurezza
   auth: {
-    requireLogin: true, // Se true, richiede l'autenticazione per accedere al sito
+    requireLogin: false, // Se true, richiede l'autenticazione per accedere al sito
     allowRegistration: false, // Se true, consente agli utenti di registrarsi
     demoCredentials: {
       username: "bimuser",

@@ -729,7 +729,7 @@ export function IfcViewerComponent() {
         {/* Logo e controlli a sinistra */}
         <div className="flex items-center gap-4">
           <div className={`${isDarkTheme ? "bg-slate-700/50" : "bg-white"} p-2 rounded-md shadow-sm`}>
-            <Image src="/images/ATI.png" alt="BIM Project Logo" width={40} height={40} className="h-auto" />
+            <Image src="/images/ATI.png" alt="ATI Logo" width={40} height={40} className="h-auto" />
           </div>
 
           <div className="flex items-center gap-2">

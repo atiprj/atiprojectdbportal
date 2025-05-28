@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { RefreshCw, Loader2, ChevronDown, ChevronRight } from "lucide-react"
+import { RefreshCw, Loader2, ChevronDown, ChevronRight, Eye, EyeOff } from "lucide-react"
 import { CollapsiblePanel } from "./ui/collapsible-panel"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useTheme } from "next-themes"
@@ -241,6 +241,53 @@ export function ClassificationTree({ models, fragments, isModelLoaded }: Classif
     }
   }
 
+  // Aggiorna la funzione hideAll per gestire tutti i modelli
+  const hideAll = async () => {
+    if (!models || !fragments) return
+
+    try {
+      setLoading(true)
+
+      // Per ogni modello, nascondi tutti gli elementi
+      for (const [modelId, modelInfo] of models) {
+        const model = modelInfo?.model || modelInfo
+        if (!model) continue
+
+        // Ottieni tutti gli elementi del modello
+        const allIds: number[] = []
+        const group = classifications.find((g) => g.name === `model_${modelId}`)
+        if (group) {
+          for (const item of group.items) {
+            allIds.push(...item.ids)
+          }
+
+          // Nascondi tutti gli elementi
+          if (allIds.length > 0) {
+            await model.setVisible(allIds, false)
+          }
+        }
+      }
+
+      // Aggiorna la visualizzazione
+      await fragments.update(true)
+
+      // Aggiorna lo stato
+      const newClassifications = classifications.map((group) => ({
+        ...group,
+        items: group.items.map((item) => ({
+          ...item,
+          visible: false,
+        })),
+      }))
+
+      setClassifications(newClassifications)
+      setLoading(false)
+    } catch (error) {
+      console.error("Error hiding all elements:", error)
+      setLoading(false)
+    }
+  }
+
   if (!isModelLoaded) {
     return null
   }
@@ -300,50 +347,39 @@ export function ClassificationTree({ models, fragments, isModelLoaded }: Classif
                           {group.items.map((item, itemIndex) => (
                             <div
                               key={item.name}
-                              className={`flex items-center justify-between py-2 rounded px-3 min-h-[32px] ${
+                              className={`flex items-start gap-3 py-2 rounded px-3 min-h-[40px] ${
                                 isDarkTheme
                                   ? "hover:bg-gray-700/30 text-gray-200"
                                   : "hover:bg-gray-100/30 text-gray-800"
                               }`}
                             >
-                              <div className="flex items-center space-x-3 flex-1 min-w-0">
-                                <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-                                  <div className={`w-px h-3 ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`} />
-                                </div>
-                                <span
-                                  className={`text-sm font-mono truncate ${
-                                    isDarkTheme ? "text-gray-200" : "text-gray-700"
-                                  }}`}
-                                >
-                                  {item.name}
-                                </span>
-                              </div>
+                              {/* Checkbox prima */}
                               <div
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   toggleItemVisibility(groupIndex, itemIndex)
                                 }}
-                                className="cursor-pointer flex-shrink-0 ml-2"
+                                className="cursor-pointer flex-shrink-0 mt-1"
                               >
                                 <div
-                                  className={`w-5 h-5 rounded-sm border-2 ${
+                                  className={`w-6 h-6 rounded-sm border-2 ${
                                     item.visible
-                                      ? "bg-blue-600 border-blue-600"
+                                      ? "bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700"
                                       : isDarkTheme
-                                        ? "border-gray-600 bg-gray-800"
-                                        : "border-gray-300 bg-white"
-                                  } flex items-center justify-center transition-colors`}
+                                        ? "border-gray-600 bg-gray-800 hover:border-gray-500"
+                                        : "border-gray-300 bg-white hover:border-gray-400"
+                                  } flex items-center justify-center transition-all duration-200`}
                                 >
                                   {item.visible && (
                                     <svg
-                                      width="12"
-                                      height="12"
-                                      viewBox="0 0 12 12"
+                                      width="14"
+                                      height="14"
+                                      viewBox="0 0 14 14"
                                       fill="none"
                                       xmlns="http://www.w3.org/2000/svg"
                                     >
                                       <path
-                                        d="M10 3L4.5 8.5L2 6"
+                                        d="M11 4L5.5 9.5L3 7"
                                         stroke="white"
                                         strokeWidth="2"
                                         strokeLinecap="round"
@@ -351,6 +387,27 @@ export function ClassificationTree({ models, fragments, isModelLoaded }: Classif
                                       />
                                     </svg>
                                   )}
+                                </div>
+                              </div>
+
+                              {/* Linea di connessione */}
+                              <div className="flex items-start pt-3 flex-shrink-0">
+                                <div className={`w-px h-3 ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`} />
+                              </div>
+
+                              {/* Nome elemento con gestione testo lungo */}
+                              <div className="flex-1 min-w-0 pt-1">
+                                <span
+                                  className={`text-sm font-mono leading-relaxed break-all ${
+                                    isDarkTheme ? "text-gray-200" : "text-gray-700"
+                                  }`}
+                                  style={{ lineHeight: "1.6" }}
+                                >
+                                  {item.name}
+                                </span>
+                                {/* Conteggio elementi */}
+                                <div className={`text-xs mt-1 ${isDarkTheme ? "text-gray-400" : "text-gray-500"}`}>
+                                  {item.count} elementi
                                 </div>
                               </div>
                             </div>
@@ -363,14 +420,30 @@ export function ClassificationTree({ models, fragments, isModelLoaded }: Classif
               </ScrollArea>
 
               <div className={`pt-2 border-t ${isDarkTheme ? "border-gray-700" : "border-gray-200"}`}>
-                <Button
-                  variant="outline"
-                  className={`w-full text-sm ${isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""}`}
-                  onClick={showAll}
-                  disabled={loading}
-                >
-                  Show All
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    className={`text-sm flex items-center justify-center gap-2 ${
+                      isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""
+                    }`}
+                    onClick={showAll}
+                    disabled={loading}
+                  >
+                    <Eye className="h-4 w-4" />
+                    Select All
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className={`text-sm flex items-center justify-center gap-2 ${
+                      isDarkTheme ? "border-gray-700 hover:bg-gray-800" : ""
+                    }`}
+                    onClick={hideAll}
+                    disabled={loading}
+                  >
+                    <EyeOff className="h-4 w-4" />
+                    Deselect All
+                  </Button>
+                </div>
               </div>
             </>
           ) : (
