@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Upload, Loader2, RefreshCw, Info, Grid3X3, Sun, Moon, Menu, LogOut } from "lucide-react"
@@ -63,6 +65,7 @@ interface ConfiguredModel {
 
 export function IfcViewerComponent() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null) // Riferimento per l'input file nascosto
   const [components, setComponents] = useState<OBC.Components | null>(null)
   const [world, setWorld] = useState<any>(null)
   const [fragments, setFragmentsState] = useState<FRAGS.FragmentsModels | null>(null)
@@ -126,38 +129,39 @@ export function IfcViewerComponent() {
   useEffect(() => {
     if (!containerRef.current || !mounted) return
 
-    // Creiamo i componenti
-    const newComponents = new OBC.Components()
+    const initializeViewer = async () => {
+      // Funzione asincrona per gestire l'inizializzazione
+      // Creiamo i componenti
+      const newComponents = new OBC.Components()
 
-    // Creiamo il mondo
-    const worlds = newComponents.get(OBC.Worlds)
-    const newWorld = worlds.create<OBC.SimpleScene, OBC.SimpleCamera, OBC.SimpleRenderer>()
-    worldRef.current = newWorld
+      // Creiamo il mondo
+      const worlds = newComponents.get(OBC.Worlds)
+      const newWorld = worlds.create<OBC.SimpleScene, OBC.SimpleCamera, OBC.SimpleRenderer>()
+      worldRef.current = newWorld
 
-    // Configuriamo la scena
-    newWorld.scene = new OBC.SimpleScene(newComponents)
-    newWorld.scene.setup()
+      // Configuriamo la scena
+      newWorld.scene = new OBC.SimpleScene(newComponents)
+      newWorld.scene.setup()
 
-    // Impostiamo lo sfondo in base al tema locale
-    newWorld.scene.three.background = isDarkTheme ? new THREE.Color(0x1e1e1e) : new THREE.Color(0xf8fafc)
+      // Impostiamo lo sfondo in base al tema locale
+      newWorld.scene.three.background = isDarkTheme ? new THREE.Color(0x1e1e1e) : new THREE.Color(0xf8fafc)
 
-    // Configuriamo il renderer
-    newWorld.renderer = new OBC.SimpleRenderer(newComponents, containerRef.current)
+      // Configuriamo il renderer
+      newWorld.renderer = new OBC.SimpleRenderer(newComponents, containerRef.current)
 
-    // Configuriamo la camera
-    newWorld.camera = new OBC.SimpleCamera(newComponents)
-    newWorld.camera.controls.setLookAt(74, 16, 0.2, 30, -4, 27)
+      // Configuriamo la camera
+      newWorld.camera = new OBC.SimpleCamera(newComponents)
+      newWorld.camera.controls.setLookAt(74, 16, 0.2, 30, -4, 27)
 
-    // Inizializziamo i componenti
-    newComponents.init()
+      // Inizializziamo i componenti
+      newComponents.init()
 
-    // Aggiungiamo la griglia
-    const grids = newComponents.get(OBC.Grids)
-    const grid = grids.create(newWorld)
-    gridRef.current = grid
+      // Aggiungiamo la griglia
+      const grids = newComponents.get(OBC.Grids)
+      const grid = grids.create(newWorld)
+      gridRef.current = grid
 
-    // Configuriamo il worker per i frammenti
-    const setupFragments = async () => {
+      // Configuriamo il worker per i frammenti
       try {
         const workerUrl = "https://thatopen.github.io/engine_fragment/resources/worker.mjs"
         const fetchedWorker = await fetch(workerUrl)
@@ -172,8 +176,9 @@ export function IfcViewerComponent() {
         newWorld.camera.controls.addEventListener("rest", () => newFragments.update(true))
         newWorld.camera.controls.addEventListener("update", () => newFragments.update())
 
-        setFragmentsState(newFragments)
-        modelStore.fragments = newFragments
+        setFragmentsState(newFragments) // Imposta lo stato fragments
+        modelStore.fragments = newFragments // Assegna a modelStore
+        console.log("Fragments initialized:", newFragments) // Log di verifica
       } catch (error) {
         console.error("Error setting up fragments:", error)
         toast({
@@ -181,29 +186,40 @@ export function IfcViewerComponent() {
           description: "Impossibile configurare il sistema di frammenti",
           variant: "destructive",
         })
+        setLoading(false) // Assicurati che lo stato di caricamento sia resettato in caso di errore
+        return // Esci se l'inizializzazione dei frammenti fallisce
       }
+
+      // Stats.js
+      const stats = new Stats()
+      stats.showPanel(0)
+      stats.dom.style.display = "none"
+      containerRef.current.appendChild(stats.dom)
+      stats.dom.style.position = "absolute"
+      stats.dom.style.left = "0px"
+      stats.dom.style.top = "0px"
+      newWorld.renderer.onBeforeUpdate.add(() => stats.begin())
+      newWorld.renderer.onAfterUpdate.add(() => stats.end())
+
+      setComponents(newComponents)
+      setWorld(newWorld)
+      setModelLoaded(false) // Reset modelLoaded state until actual models are loaded
     }
 
-    setupFragments()
-
-    // Stats.js
-    const stats = new Stats()
-    stats.showPanel(0)
-    stats.dom.style.display = "none"
-    containerRef.current.appendChild(stats.dom)
-    stats.dom.style.position = "absolute"
-    stats.dom.style.left = "0px"
-    stats.dom.style.top = "0px"
-    newWorld.renderer.onBeforeUpdate.add(() => stats.begin())
-    newWorld.renderer.onAfterUpdate.add(() => stats.end())
-
-    setComponents(newComponents)
-    setWorld(newWorld)
+    initializeViewer() // Chiama la funzione asincrona
 
     return () => {
-      URL.revokeObjectURL(fragments?.workerURL || "")
-      newComponents.dispose()
-      stats.dom.remove()
+      // Cleanup
+      const stats = new Stats() // Declare stats here
+      if (fragments?.workerURL) {
+        // Controlla se fragments è definito prima di accedere a workerURL
+        URL.revokeObjectURL(fragments.workerURL)
+      }
+      components?.dispose() // Usa optional chaining per dispose
+      // Rimuovi stats.dom se è stato aggiunto
+      if (stats.dom && containerRef.current && containerRef.current.contains(stats.dom)) {
+        stats.dom.remove()
+      }
 
       if (clickListenerRef.current && containerRef.current) {
         containerRef.current.removeEventListener("click", clickListenerRef.current)
@@ -228,21 +244,108 @@ export function IfcViewerComponent() {
     }
   }, [isDarkTheme, world, mounted])
 
+  // Carica tutti i modelli configurati automaticamente all'avvio del viewer
+  useEffect(() => {
+    // Assicurati che fragments e world siano inizializzati prima di caricare i modelli
+    if (configuredModels.length > 0 && fragments && world) {
+      loadConfiguredModels()
+    }
+  }, [configuredModels, fragments, world]) // Aggiungi fragments e world come dipendenze
+
+  // Helper per caricare un modello (usato sia per configurati che per upload)
+  const loadModelHelper = async (
+    fileBuffer: ArrayBuffer,
+    fileName: string,
+    modelId: string,
+    modelConfig?: ConfiguredModel, // Opzionale per i modelli configurati
+  ) => {
+    if (!fragments || !world) {
+      throw new Error("Visualizzatore non pronto: fragments o world non inizializzati.")
+    }
+
+    let fragmentBytes: ArrayBuffer
+    let modelType: "ifc" | "frag" = "ifc"
+
+    if (fileName.toLowerCase().endsWith(".ifc")) {
+      const serializer = new FRAGS.IfcImporter()
+      serializer.wasm = { absolute: true, path: "https://unpkg.com/web-ifc@0.0.68/" }
+      const ifcBytes = new Uint8Array(fileBuffer)
+      fragmentBytes = await serializer.process({ bytes: ifcBytes })
+      modelType = "ifc"
+    } else if (fileName.toLowerCase().endsWith(".frag")) {
+      fragmentBytes = fileBuffer
+      modelType = "frag"
+    } else {
+      throw new Error("Formato file non supportato. Carica file .ifc o .frag")
+    }
+
+    const model = await fragments.load(fragmentBytes.slice(0), { modelId })
+
+    let elementCount = 0
+    try {
+      const categories = await model.getCategories()
+      for (const category of categories) {
+        const items = await model.getItemsOfCategory(category)
+        elementCount += items.length
+      }
+    } catch (error) {
+      console.warn("Error counting elements:", error)
+    }
+
+    const modelInfo = {
+      id: modelId,
+      name: modelConfig?.name || fileName,
+      description: modelConfig?.description || `Caricato da utente (${modelType.toUpperCase()})`,
+      type: modelType,
+      category: modelConfig?.category || "Caricati",
+      visible: modelConfig?.visible !== undefined ? modelConfig.visible : true,
+      elementCount,
+      model,
+      fragmentBytes,
+      author: modelConfig?.author || user?.name || "Utente",
+      version: modelConfig?.version || "1.0",
+      tags: modelConfig?.tags || ["caricato", "utente"],
+      object: model.object,
+    }
+
+    const newModels = new Map(models)
+    newModels.set(modelId, modelInfo)
+    setModels(newModels)
+    modelStore.addModel(modelId, modelInfo)
+
+    world.scene.three.add(model.object)
+    await fragments.update(true)
+    setupGlobalElementSelectionWithModels(newModels) // Re-setup selection for new models
+
+    setModelLoaded(true)
+
+    toast({
+      title: "Successo",
+      description: `Modello "${modelInfo.name}" caricato con successo (${elementCount} elementi)`,
+    })
+  }
+
   // Carica tutti i modelli configurati
   const loadConfiguredModels = async () => {
-    if (!fragments || !world) return
+    if (!fragments || !world) return // Guardiano per assicurarsi che fragments e world siano pronti
 
     setLoading(true)
 
     for (const configModel of configuredModels) {
-      if (configModel.visible) {
+      if (configModel.visible && !models.has(configModel.id)) {
+        // Carica solo se visibile e non già caricato
         try {
-          await loadConfiguredModel(configModel)
+          const response = await fetch(configModel.url)
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          const buffer = await response.arrayBuffer()
+          await loadModelHelper(buffer, configModel.name, configModel.id, configModel)
         } catch (error) {
           console.error(`Error loading model ${configModel.id}:`, error)
           toast({
             title: "Errore",
-            description: `Impossibile caricare il modello "${configModel.name}"`,
+            description: `Impossibile caricare il modello "${configModel.name}". Verifica che il file esista nel percorso specificato.`,
             variant: "destructive",
           })
         }
@@ -253,107 +356,86 @@ export function IfcViewerComponent() {
   }
 
   // Carica un singolo modello configurato
-  const loadConfiguredModel = async (configModel: ConfiguredModel) => {
-    if (!fragments || !world) return
+  const loadSpecificModel = async (configModel: ConfiguredModel) => {
+    if (models.has(configModel.id)) {
+      toast({
+        title: "Informazione",
+        description: `Il modello "${configModel.name}" è già caricato`,
+      })
+      return
+    }
+
+    setLoadingStates((prev) => new Map(prev).set(configModel.id, true)) // Imposta lo stato di caricamento per il modello specifico
 
     try {
-      console.log(`Caricamento modello: ${configModel.name}`)
-
-      // Imposta lo stato di caricamento per questo modello
-      const newLoadingStates = new Map(loadingStates)
-      newLoadingStates.set(configModel.id, true)
-      setLoadingStates(newLoadingStates)
-
-      // Fetch del file
       const response = await fetch(configModel.url)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-
-      let fragmentBytes: ArrayBuffer
-
-      if (configModel.type === "ifc") {
-        // Converti IFC in Fragment
-        const ifcBuffer = await response.arrayBuffer()
-        const serializer = new FRAGS.IfcImporter()
-        serializer.wasm = { absolute: true, path: "https://unpkg.com/web-ifc@0.0.68/" }
-
-        const ifcBytes = new Uint8Array(ifcBuffer)
-        fragmentBytes = await serializer.process({ bytes: ifcBytes })
-      } else {
-        // File Fragment già processato
-        fragmentBytes = await response.arrayBuffer()
-      }
-
-      // Carica il modello
-      const model = await fragments.load(fragmentBytes.slice(0), { modelId: configModel.id })
-
-      // Conta gli elementi del modello
-      let elementCount = 0
-      try {
-        const categories = await model.getCategories()
-        for (const category of categories) {
-          const items = await model.getItemsOfCategory(category)
-          elementCount += items.length
-        }
-      } catch (error) {
-        console.warn("Error counting elements:", error)
-      }
-
-      // Crea le informazioni del modello
-      const modelInfo = {
-        id: configModel.id,
-        name: configModel.name,
-        description: configModel.description,
-        type: configModel.type,
-        category: configModel.category,
-        visible: true,
-        elementCount,
-        model,
-        fragmentBytes,
-        author: configModel.author,
-        version: configModel.version,
-        tags: configModel.tags,
-        object: model.object, // Salva il riferimento all'oggetto 3D
-      }
-
-      // Aggiorna la mappa dei modelli
-      const newModels = new Map(models)
-      newModels.set(configModel.id, modelInfo)
-      setModels(newModels)
-
-      // Aggiorna il model store
-      modelStore.addModel(configModel.id, modelInfo)
-
-      // Aggiungi alla scena
-      world.scene.three.add(model.object)
-      await fragments.update(true)
-
-      // Configura la selezione
-      setTimeout(() => {
-        setupGlobalElementSelectionWithModels(newModels)
-      }, 100)
-
-      setModelLoaded(true)
-
-      toast({
-        title: "Successo",
-        description: `Modello "${configModel.name}" caricato con successo (${elementCount} elementi)`,
-      })
-
-      console.log(`Modello ${configModel.name} caricato e aggiunto alla scena`)
+      const buffer = await response.arrayBuffer()
+      await loadModelHelper(buffer, configModel.name, configModel.id, configModel)
     } catch (error) {
-      console.error(`Error loading configured model ${configModel.id}:`, error)
+      console.error(`Error loading specific model ${configModel.id}:`, error)
       toast({
         title: "Errore",
         description: `Impossibile caricare il modello "${configModel.name}". Verifica che il file esista nel percorso specificato.`,
         variant: "destructive",
       })
     } finally {
-      // Rimuovi lo stato di caricamento
-      const newLoadingStates = new Map(loadingStates)
-      newLoadingStates.delete(configModel.id)
-      setLoadingStates(newLoadingStates)
+      setLoadingStates((prev) => {
+        const newState = new Map(prev)
+        newState.delete(configModel.id)
+        return newState
+      }) // Rimuovi lo stato di caricamento
+    }
+  }
+
+  // Gestione del caricamento di un file locale
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file || !fragments || !world) {
+      // Guardiano per assicurarsi che fragments e world siano pronti
+      toast({
+        title: "Errore",
+        description: "Nessun file selezionato o visualizzatore non pronto.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setLoading(true) // Imposta lo stato di caricamento generale
+
+    try {
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const buffer = e.target?.result as ArrayBuffer
+        const modelId = `uploaded-${Date.now()}` // ID univoco per il modello caricato
+
+        try {
+          await loadModelHelper(buffer, file.name, modelId)
+        } catch (error) {
+          console.error("Error loading uploaded model:", error)
+          toast({
+            title: "Errore",
+            description: `Si è verificato un errore durante il caricamento del file: ${error instanceof Error ? error.message : String(error)}`,
+            variant: "destructive",
+          })
+        } finally {
+          setLoading(false) // Resetta lo stato di caricamento generale
+          if (event.target) {
+            event.target.value = "" // Resetta il valore dell'input per permettere di ricaricare lo stesso file
+          }
+        }
+      }
+      reader.readAsArrayBuffer(file)
+    } catch (error) {
+      console.error("Error reading file:", error)
+      toast({
+        title: "Errore",
+        description: `Si è verificato un errore durante la lettura del file: ${error instanceof Error ? error.message : String(error)}`,
+        variant: "destructive",
+      })
+      setLoading(false)
     }
   }
 
@@ -633,19 +715,6 @@ export function IfcViewerComponent() {
     })
   }
 
-  // Carica un modello configurato specifico
-  const loadSpecificModel = async (configModel: ConfiguredModel) => {
-    if (models.has(configModel.id)) {
-      toast({
-        title: "Informazione",
-        description: `Il modello "${configModel.name}" è già caricato`,
-      })
-      return
-    }
-
-    await loadConfiguredModel(configModel)
-  }
-
   // Funzione per pulire completamente la scena
   const clearAllModels = async () => {
     if (!world || !fragments) return
@@ -799,6 +868,25 @@ export function IfcViewerComponent() {
                 Carica Tutti
               </>
             )}
+          </Button>
+
+          {/* Input file nascosto e pulsante per il caricamento locale */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept=".ifc,.frag" // Specifica i tipi di file accettati
+            className="hidden" // Mantiene l'input nascosto
+          />
+          <Button
+            variant={isDarkTheme ? "secondary" : "default"}
+            size="sm"
+            onClick={() => fileInputRef.current?.click()} // Clicca sull'input nascosto
+            disabled={loading} // Disabilita se è già in corso un caricamento
+            className={isDarkTheme ? "bg-slate-700 text-slate-200 hover:bg-slate-600 border-slate-600" : ""}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            Carica File
           </Button>
 
           {/* Menu Navigation */}
