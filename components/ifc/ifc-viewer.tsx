@@ -248,7 +248,6 @@ export function IfcViewerComponent() {
   useEffect(() => {
     // Assicurati che fragments e world siano inizializzati prima di caricare i modelli
     if (configuredModels.length > 0 && fragments && world) {
-      loadConfiguredModels()
     }
   }, [configuredModels, fragments, world]) // Aggiungi fragments e world come dipendenze
 
