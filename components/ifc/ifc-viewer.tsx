@@ -21,6 +21,7 @@ import {
 // Importiamo le librerie necessarie
 import * as OBC from "@thatopen/components"
 import * as FRAGS from "@thatopen/fragments"
+import { IfcImporter } from "@thatopen/fragments"
 import * as THREE from "three"
 import Stats from "stats.js"
 import { SectionGizmo } from "./section-gizmo"
@@ -88,6 +89,8 @@ export function IfcViewerComponent() {
   const clickListenerRef = useRef<((event: MouseEvent) => void) | null>(null)
   const gridRef = useRef<any>(null)
   const worldRef = useRef<any>(null)
+  const statsRef = useRef<Stats | null>(null) // Ref for Stats.js
+  const workerUrlRef = useRef<string | null>(null) // Ref for worker URL
 
   // Stati per modelli configurati
   const [models, setModels] = useState<Map<string, any>>(new Map())
@@ -130,7 +133,6 @@ export function IfcViewerComponent() {
     if (!containerRef.current || !mounted) return
 
     const initializeViewer = async () => {
-      // Funzione asincrona per gestire l'inizializzazione
       // Creiamo i componenti
       const newComponents = new OBC.Components()
 
@@ -170,6 +172,7 @@ export function IfcViewerComponent() {
           type: "text/javascript",
         })
         const url = URL.createObjectURL(workerFile)
+        workerUrlRef.current = url // Store the URL in ref
 
         const newFragments = new FRAGS.FragmentsModels(url)
 
@@ -200,6 +203,7 @@ export function IfcViewerComponent() {
       stats.dom.style.top = "0px"
       newWorld.renderer.onBeforeUpdate.add(() => stats.begin())
       newWorld.renderer.onAfterUpdate.add(() => stats.end())
+      statsRef.current = stats // Store stats instance in ref
 
       setComponents(newComponents)
       setWorld(newWorld)
@@ -210,24 +214,20 @@ export function IfcViewerComponent() {
 
     return () => {
       // Cleanup
-      const stats = new Stats() // Declare stats here
-      if (fragments?.workerURL) {
-        // Controlla se fragments è definito prima di accedere a workerURL
-        URL.revokeObjectURL(fragments.workerURL)
-      }
-      components?.dispose() // Usa optional chaining per dispose
-      // Rimuovi stats.dom se è stato aggiunto
-      if (stats.dom && containerRef.current && containerRef.current.contains(stats.dom)) {
-        stats.dom.remove()
+      if (statsRef.current && statsRef.current.dom.parentNode) {
+        statsRef.current.dom.parentNode.removeChild(statsRef.current.dom)
       }
 
-      if (clickListenerRef.current && containerRef.current) {
-        containerRef.current.removeEventListener("click", clickListenerRef.current)
+      if (workerUrlRef.current) {
+        URL.revokeObjectURL(workerUrlRef.current)
       }
+
+      // components is the state variable, which will be set after initialization
+      components?.dispose()
 
       modelStore.reset()
     }
-  }, [toast, mounted, isDarkTheme]) // Aggiungiamo isDarkTheme come dipendenza
+  }, [toast, mounted]) // Removed isDarkTheme from dependencies
 
   // Aggiorna lo sfondo quando cambia il tema locale
   useEffect(() => {
@@ -257,28 +257,27 @@ export function IfcViewerComponent() {
     fileBuffer: ArrayBuffer,
     fileName: string,
     modelId: string,
-    modelConfig?: ConfiguredModel, // Opzionale per i modelli configurati
+    modelConfig?: ConfiguredModel,
   ) => {
     if (!fragments || !world) {
       throw new Error("Visualizzatore non pronto: fragments o world non inizializzati.")
     }
 
+    // Determino il tipo dal nome
+    const isIfc = fileName.toLowerCase().endsWith(".ifc")
     let fragmentBytes: ArrayBuffer
-    let modelType: "ifc" | "frag" = "ifc"
 
-    if (fileName.toLowerCase().endsWith(".ifc")) {
-      const serializer = new FRAGS.IfcImporter()
+    if (isIfc) {
+      // Conversione al volo di IFC → fragment
+      const serializer = new IfcImporter()
       serializer.wasm = { absolute: true, path: "https://unpkg.com/web-ifc@0.0.68/" }
-      const ifcBytes = new Uint8Array(fileBuffer)
-      fragmentBytes = await serializer.process({ bytes: ifcBytes })
-      modelType = "ifc"
-    } else if (fileName.toLowerCase().endsWith(".frag")) {
-      fragmentBytes = fileBuffer
-      modelType = "frag"
+      fragmentBytes = await serializer.process({ bytes: new Uint8Array(fileBuffer) })
     } else {
-      throw new Error("Formato file non supportato. Carica file .ifc o .frag")
+      // .frag già pronto
+      fragmentBytes = fileBuffer
     }
 
+    // Carico sempre il fragment nel viewer OBC
     const model = await fragments.load(fragmentBytes.slice(0), { modelId })
 
     let elementCount = 0
@@ -295,8 +294,8 @@ export function IfcViewerComponent() {
     const modelInfo = {
       id: modelId,
       name: modelConfig?.name || fileName,
-      description: modelConfig?.description || `Caricato da utente (${modelType.toUpperCase()})`,
-      type: modelType,
+      description: modelConfig?.description || `Caricato da utente (${isIfc ? "IFC" : "FRAG"})`,
+      type: isIfc ? "ifc" : "frag",
       category: modelConfig?.category || "Caricati",
       visible: modelConfig?.visible !== undefined ? modelConfig.visible : true,
       elementCount,
@@ -315,7 +314,6 @@ export function IfcViewerComponent() {
 
     world.scene.three.add(model.object)
     await fragments.update(true)
-    setupGlobalElementSelectionWithModels(newModels) // Re-setup selection for new models
 
     setModelLoaded(true)
 
@@ -331,22 +329,25 @@ export function IfcViewerComponent() {
 
     setLoading(true)
 
-    for (const configModel of configuredModels) {
-      if (configModel.visible && !models.has(configModel.id)) {
-        // Carica solo se visibile e non già caricato
+    for (const cfg of configuredModels) {
+      if (cfg.visible && !models.has(cfg.id)) {
+        setLoadingStates((prev) => new Map(prev).set(cfg.id, true))
         try {
-          const response = await fetch(configModel.url)
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-          }
-          const buffer = await response.arrayBuffer()
-          await loadModelHelper(buffer, configModel.name, configModel.id, configModel)
-        } catch (error) {
-          console.error(`Error loading model ${configModel.id}:`, error)
+          const resp = await fetch(cfg.url.startsWith("/") ? cfg.url : `/${cfg.url}`)
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+          const buffer = await resp.arrayBuffer()
+          await loadModelHelper(buffer, cfg.name + (cfg.type === "ifc" ? ".ifc" : ".frag"), cfg.id, cfg)
+        } catch (e: any) {
           toast({
             title: "Errore",
-            description: `Impossibile caricare il modello "${configModel.name}". Verifica che il file esista nel percorso specificato.`,
+            description: `Non posso caricare "${cfg.name}": ${e.message}`,
             variant: "destructive",
+          })
+        } finally {
+          setLoadingStates((prev) => {
+            const newState = new Map(prev)
+            newState.delete(cfg.id)
+            return newState
           })
         }
       }
@@ -370,15 +371,15 @@ export function IfcViewerComponent() {
     try {
       const response = await fetch(configModel.url)
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error(`HTTP error! status: ${response.status} for URL: ${configModel.url}`)
       }
       const buffer = await response.arrayBuffer()
       await loadModelHelper(buffer, configModel.name, configModel.id, configModel)
     } catch (error) {
-      console.error(`Error loading specific model ${configModel.id}:`, error)
+      console.error(`Errore durante il caricamento del modello specifico ${configModel.id}:`, error)
       toast({
         title: "Errore",
-        description: `Impossibile caricare il modello "${configModel.name}". Verifica che il file esista nel percorso specificato.`,
+        description: `Impossibile caricare il modello "${configModel.name}". Verifica che il file esista nel percorso specificato. Dettagli: ${error instanceof Error ? error.message : String(error)}`,
         variant: "destructive",
       })
     } finally {
@@ -414,7 +415,7 @@ export function IfcViewerComponent() {
         try {
           await loadModelHelper(buffer, file.name, modelId)
         } catch (error) {
-          console.error("Error loading uploaded model:", error)
+          console.error("Errore durante il caricamento del modello caricato dall'utente:", error)
           toast({
             title: "Errore",
             description: `Si è verificato un errore durante il caricamento del file: ${error instanceof Error ? error.message : String(error)}`,
@@ -429,7 +430,7 @@ export function IfcViewerComponent() {
       }
       reader.readAsArrayBuffer(file)
     } catch (error) {
-      console.error("Error reading file:", error)
+      console.error("Errore durante la lettura del file:", error)
       toast({
         title: "Errore",
         description: `Si è verificato un errore durante la lettura del file: ${error instanceof Error ? error.message : String(error)}`,
@@ -439,9 +440,9 @@ export function IfcViewerComponent() {
     }
   }
 
-  // Configurazione del raycaster per la selezione degli elementi - GLOBALE con parametri
-  const setupGlobalElementSelectionWithModels = (modelsMap: Map<string, any>) => {
-    if (!containerRef.current || !world) return
+  // New useEffect for click listener
+  useEffect(() => {
+    if (!world || !fragments || !containerRef.current) return
 
     const highlightMaterial: FRAGS.MaterialDefinition = {
       color: new THREE.Color("gold"),
@@ -450,25 +451,19 @@ export function IfcViewerComponent() {
       transparent: false,
     }
 
-    // Rimuovi il listener precedente se esiste
-    if (clickListenerRef.current && containerRef.current) {
-      containerRef.current.removeEventListener("click", clickListenerRef.current)
-    }
-
     const clickHandler = async (event: MouseEvent) => {
       try {
         const mouse = new THREE.Vector2()
         mouse.x = event.clientX
         mouse.y = event.clientY
 
-        // Prova il raycast su tutti i modelli caricati e visibili
         let foundResult = null
         let foundModelId = null
         let foundModel = null
 
-        // Usa la mappa dei modelli passata come parametro
-        for (const [currentModelId, modelInfo] of modelsMap) {
-          if (!modelInfo.visible) continue // Salta i modelli nascosti
+        // Use the `models` state directly, which is a dependency of this effect
+        for (const [currentModelId, modelInfo] of models) {
+          if (!modelInfo.visible) continue
 
           const currentModel = modelInfo.model || modelInfo
           try {
@@ -482,17 +477,18 @@ export function IfcViewerComponent() {
               foundResult = result
               foundModelId = currentModelId
               foundModel = currentModel
-              break // Prendi il primo risultato trovato
+              break
             }
           } catch (error) {
             console.warn(`Error raycasting model ${currentModelId}:`, error)
           }
         }
+
         // Reset highlight precedente
         const oldId = getSelected()
         const oldModelId = getSelectedModel()
         if (oldId !== null && oldModelId) {
-          const oldModelInfo = modelsMap.get(oldModelId)
+          const oldModelInfo = models.get(oldModelId)
           if (oldModelInfo) {
             const oldModel = oldModelInfo.model || oldModelInfo
             try {
@@ -522,23 +518,15 @@ export function IfcViewerComponent() {
       }
     }
 
-    clickListenerRef.current = clickHandler
-    if (containerRef.current) {
-      containerRef.current.addEventListener("click", clickHandler)
-    }
-  }
+    containerRef.current.addEventListener("click", clickHandler)
+    clickListenerRef.current = clickHandler // Store for cleanup
 
-  // Configurazione del raycaster per la selezione degli elementi - GLOBALE
-  const setupGlobalElementSelection = () => {
-    setupGlobalElementSelectionWithModels(models)
-  }
-
-  // Aggiorna il sistema di selezione quando cambiano i modelli
-  useEffect(() => {
-    if (models.size > 0 && world && containerRef.current) {
-      setupGlobalElementSelection()
+    return () => {
+      if (containerRef.current && clickListenerRef.current) {
+        containerRef.current.removeEventListener("click", clickListenerRef.current)
+      }
     }
-  }, [models, world])
+  }, [world, fragments, models]) // Dependencies: world, fragments, and models state
 
   // Funzione per ottenere le informazioni su un elemento
   const getElementInfo = async (model: any, localId: number) => {
@@ -700,7 +688,8 @@ export function IfcViewerComponent() {
     const modelInfo = models.get(modelId)
     if (!modelInfo) return
 
-    const fileName = modelInfo.type === "ifc" ? modelInfo.name.replace(".ifc", ".frag") : modelInfo.name
+    const baseName = modelInfo.name.replace(/\.[^/.]+$/, "") // rimuove l’eventuale estensione
+    const fileName = modelInfo.type === "ifc" ? `${baseName}.frag` : `${baseName}.frag`
 
     const file = new File([modelInfo.fragmentBytes], fileName)
     const a = document.createElement("a")
