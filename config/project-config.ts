@@ -117,7 +117,7 @@ export const projectConfig = {
       id: "ifc-model-muri",
       name: "Modello Muri",
       description: "Modello IFC dei muri portanti e divisori",
-      url: "/models/000001_FTE_00_000_ARC_PIM_000_MURI.frag",
+      url: "/models/000001_FTE_00_000_ARC_PIM_000_MURI.ifc",
       type: "frag",
       category: "Architettura",
       visible: true,
